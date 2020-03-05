@@ -1,0 +1,503 @@
+﻿################
+##  Sensores  ##
+################
+sensor:
+  - platform: template
+    sensors:
+      battery_llavero_jcc:
+        friendly_name: "Llavero JCC"
+        value_template: >
+            {%- if state_attr('binary_sensor.llavero_jcc', 'battery_level') %}
+                {{ state_attr('binary_sensor.llavero_jcc', 'battery_level') | round }}
+            {% else %}
+                {{ states('binary_sensor.llavero_jcc') }}
+            {%- endif %}
+        icon_template: "{%- if state_attr('binary_sensor.llavero_jcc', 'battery_level') <= 5 %}mdi:battery-outline{%- elif state_attr('binary_sensor.llavero_jcc', 'battery_level') >= 95 %}mdi:battery{% else %}mdi:battery-{{(state_attr('binary_sensor.llavero_jcc', 'battery_level') | float / 10) | round*10 }}{%- endif %}"
+        unit_of_measurement: '%'
+        device_class: battery
+
+      battery_llavero_isset:
+        friendly_name: "Llavero Isset"
+        value_template: >
+            {%- if state_attr('binary_sensor.llavero_isset', 'battery_level') %}
+                {{ state_attr('binary_sensor.llavero_isset', 'battery_level') | round }}
+            {% else %}
+                {{ states('binary_sensor.llavero_isset') }}
+            {%- endif %}
+        icon_template: "{%- if state_attr('binary_sensor.llavero_isset', 'battery_level') <= 5 %}mdi:battery-outline{%- elif state_attr('binary_sensor.llavero_isset', 'battery_level') >= 95 %}mdi:battery{% else %}mdi:battery-{{(state_attr('binary_sensor.llavero_isset', 'battery_level') | float / 10) | round*10 }}{%- endif %}"
+        unit_of_measurement: '%'
+        device_class: battery
+
+      battery_llavero_ania:
+        friendly_name: "Llavero Ania"
+        value_template: >
+            {%- if state_attr('binary_sensor.llavero_ania', 'battery_level') %}
+                {{ state_attr('binary_sensor.llavero_ania', 'battery_level') | round }}
+            {% else %}
+                {{ states('binary_sensor.llavero_ania') }}
+            {%- endif %}
+        icon_template: "{%- if state_attr('binary_sensor.llavero_ania', 'battery_level') <= 5 %}mdi:battery-outline{%- elif state_attr('binary_sensor.llavero_ania', 'battery_level') >= 95 %}mdi:battery{% else %}mdi:battery-{{(state_attr('binary_sensor.llavero_ania', 'battery_level') | float / 10) | round*10 }}{%- endif %}"
+        unit_of_measurement: '%'
+        device_class: battery
+
+      battery_entrada_puerta:
+        friendly_name: "Entrada Puerta"
+        value_template: >
+            {%- if state_attr('binary_sensor.entrada_puerta', 'battery_level') %}
+                {{ state_attr('binary_sensor.entrada_puerta', 'battery_level') | round }}
+            {% else %}
+                {{ states('binary_sensor.entrada_puerta') }}
+            {%- endif %}
+        icon_template: "{%- if state_attr('binary_sensor.entrada_puerta', 'battery_level') <= 5 %}mdi:battery-outline{%- elif state_attr('binary_sensor.entrada_puerta', 'battery_level') >= 95 %}mdi:battery{% else %}mdi:battery-{{(state_attr('binary_sensor.entrada_puerta', 'battery_level') | float / 10) | round*10 }}{%- endif %}"
+        unit_of_measurement: '%'
+        device_class: battery
+
+      battery_comedor_ventana_izq:
+        friendly_name: "Comedor Ventana Izquierda"
+        value_template: >
+            {%- if state_attr('binary_sensor.comedor_ventana_izq', 'battery_level') %}
+                {{ state_attr('binary_sensor.comedor_ventana_izq', 'battery_level') | round }}
+            {% else %}
+                {{ states('binary_sensor.comedor_ventana_izq') }}
+            {%- endif %}
+        icon_template: "{%- if state_attr('binary_sensor.comedor_ventana_izq', 'battery_level') <= 5 %}mdi:battery-outline{%- elif state_attr('binary_sensor.comedor_ventana_izq', 'battery_level') >= 95 %}mdi:battery{% else %}mdi:battery-{{(state_attr('binary_sensor.comedor_ventana_izq', 'battery_level') | float / 10) | round*10 }}{%- endif %}"
+        unit_of_measurement: '%'
+        device_class: battery
+
+      battery_comedor_ventana_der:
+        friendly_name: "Comedor Ventaba Derecha"
+        value_template: >
+            {%- if state_attr('binary_sensor.comedor_ventana_der', 'battery_level') %}
+                {{ state_attr('binary_sensor.comedor_ventana_der', 'battery_level') | round }}
+            {% else %}
+                {{ states('binary_sensor.comedor_ventana_der') }}
+            {%- endif %}
+        icon_template: "{%- if state_attr('binary_sensor.comedor_ventana_der', 'battery_level') <= 5 %}mdi:battery-outline{%- elif state_attr('binary_sensor.comedor_ventana_der', 'battery_level') >= 95 %}mdi:battery{% else %}mdi:battery-{{(state_attr('binary_sensor.comedor_ventana_der', 'battery_level') | float / 10) | round*10 }}{%- endif %}"
+        unit_of_measurement: '%'
+        device_class: battery
+
+      battery_comedor_aa:
+        friendly_name: "Comedor Aire Acondicionado"
+        value_template: >
+            {%- if state_attr('binary_sensor.comedor_aire_acondicionado', 'battery_level') %}
+                {{ state_attr('binary_sensor.comedor_aire_acondicionado', 'battery_level') | round }}
+            {% else %}
+                {{ states('binary_sensor.comedor_aire_acondicionado') }}
+            {%- endif %}
+        icon_template: "{%- if state_attr('binary_sensor.comedor_aire_acondicionado', 'battery_level') <= 5 %}mdi:battery-outline{%- elif state_attr('binary_sensor.comedor_aire_acondicionado', 'battery_level') >= 95 %}mdi:battery{% else %}mdi:battery-{{(state_attr('binary_sensor.comedor_aire_acondicionado', 'battery_level') | float / 10) | round*10 }}{%- endif %}"
+        unit_of_measurement: '%'
+        device_class: battery
+
+      battery_dormitorio_aa:
+        friendly_name: "Dormitorio Aire Acondicionado"
+        value_template: >
+            {%- if state_attr('binary_sensor.dormitorio_aire_acondicionado', 'battery_level') %}
+                {{ state_attr('binary_sensor.dormitorio_aire_acondicionado', 'battery_level') | round }}
+            {% else %}
+                {{ states('binary_sensor.dormitorio_aire_acondicionado') }}
+            {%- endif %}
+        icon_template: "{%- if state_attr('binary_sensor.dormitorio_aire_acondicionado', 'battery_level') <= 5 %}mdi:battery-outline{%- elif state_attr('binary_sensor.dormitorio_aire_acondicionado', 'battery_level') >= 95 %}mdi:battery{% else %}mdi:battery-{{(state_attr('binary_sensor.dormitorio_aire_acondicionado', 'battery_level') | float / 10) | round*10 }}{%- endif %}"
+        unit_of_measurement: '%'
+        device_class: battery
+
+      battery_aa_agua:
+        friendly_name: "Aire Acondicionado Agua"
+        value_template: >
+            {%- if state_attr('binary_sensor.aa_agua', 'battery_level') %}
+                {{ state_attr('binary_sensor.aa_agua', 'battery_level') | round }}
+            {% else %}
+                {{ states('binary_sensor.aa_agua') }}
+            {%- endif %}
+        icon_template: "{%- if state_attr('binary_sensor.aa_agua', 'battery_level') <= 5 %}mdi:battery-outline{%- elif state_attr('binary_sensor.aa_agua', 'battery_level') >= 95 %}mdi:battery{% else %}mdi:battery-{{(state_attr('binary_sensor.aa_agua', 'battery_level') | float / 10) | round*10 }}{%- endif %}"
+        unit_of_measurement: '%'
+        device_class: battery
+
+      battery_cocina_movimiento:
+        friendly_name: "Cocina Movimiento"
+        value_template: >
+            {%- if state_attr('binary_sensor.cocina_movimiento', 'battery_level') %}
+                {{ state_attr('binary_sensor.cocina_movimiento', 'battery_level') | round }}
+            {% else %}
+                {{ states('binary_sensor.cocina_movimiento') }}
+            {%- endif %}
+        icon_template: "{%- if state_attr('binary_sensor.cocina_movimiento', 'battery_level') <= 5 %}mdi:battery-outline{%- elif state_attr('binary_sensor.cocina_movimiento', 'battery_level') >= 95 %}mdi:battery{% else %}mdi:battery-{{(state_attr('binary_sensor.cocina_movimiento', 'battery_level') | float / 10) | round*10 }}{%- endif %}"
+        unit_of_measurement: '%'
+        device_class: battery
+
+      battery_comedor_movimiento:
+        friendly_name: "Comedor Movimiento"
+        value_template: >
+            {%- if state_attr('binary_sensor.comedor_movimiento', 'battery_level') %}
+                {{ state_attr('binary_sensor.comedor_movimiento', 'battery_level') | round }}
+            {% else %}
+                {{ states('binary_sensor.comedor_movimiento') }}
+            {%- endif %}
+        icon_template: "{%- if state_attr('binary_sensor.comedor_movimiento', 'battery_level') <= 5 %}mdi:battery-outline{%- elif state_attr('binary_sensor.comedor_movimiento', 'battery_level') >= 95 %}mdi:battery{% else %}mdi:battery-{{(state_attr('binary_sensor.comedor_movimiento', 'battery_level') | float / 10) | round*10 }}{%- endif %}"
+        unit_of_measurement: '%'
+        device_class: battery
+
+      battery_entrada_pulsador:
+        friendly_name: "Entrada Pulsador"
+        value_template: >
+            {%- if state_attr('binary_sensor.entrada_pulsador', 'battery_level') %}
+                {{ state_attr('binary_sensor.entrada_pulsador', 'battery_level') | round }}
+            {% else %}
+                {{ states('binary_sensor.entrada_pulsador') }}
+            {%- endif %}
+        icon_template: "{%- if state_attr('binary_sensor.entrada_pulsador', 'battery_level') <= 5 %}mdi:battery-outline{%- elif state_attr('binary_sensor.entrada_pulsador', 'battery_level') >= 95 %}mdi:battery{% else %}mdi:battery-{{(state_attr('binary_sensor.entrada_pulsador', 'battery_level') | float / 10) | round*10 }}{%- endif %}"
+        unit_of_measurement: '%'
+        device_class: battery
+
+      battery_comedor_temperatura:
+        friendly_name: "Comedor Temperatura"
+        value_template: >
+            {%- if state_attr('sensor.comedor_temperatura', 'battery_level') %}
+                {{ state_attr('sensor.comedor_temperatura', 'battery_level') | round }}
+            {% else %}
+                {{ states('sensor.comedor_temperatura') }}
+            {%- endif %}
+        icon_template: "{%- if state_attr('sensor.comedor_temperatura', 'battery_level') <= 5 %}mdi:battery-outline{%- elif state_attr('sensor.comedor_temperatura', 'battery_level') >= 95 %}mdi:battery{% else %}mdi:battery-{{(state_attr('sensor.comedor_temperatura', 'battery_level') | float / 10) | round*10 }}{%- endif %}"
+        unit_of_measurement: '%'
+        device_class: battery
+
+      battery_cocina_temperatura:
+        friendly_name: "Cocina Temperatura"
+        value_template: >
+            {%- if state_attr('sensor.cocina_temperatura', 'battery_level') %}
+                {{ state_attr('sensor.cocina_temperatura', 'battery_level') | round }}
+            {% else %}
+                {{ states('sensor.cocina_temperatura') }}
+            {%- endif %}
+        icon_template: "{%- if state_attr('sensor.cocina_temperatura', 'battery_level') <= 5 %}mdi:battery-outline{%- elif state_attr('sensor.cocina_temperatura', 'battery_level') >= 95 %}mdi:battery{% else %}mdi:battery-{{(state_attr('sensor.cocina_temperatura', 'battery_level') | float / 10) | round*10 }}{%- endif %}"
+        unit_of_measurement: '%'
+        device_class: battery
+
+      battery_despacho_temperatura:
+        friendly_name: "Despacho Temperatura"
+        value_template: >
+            {%- if state_attr('sensor.despacho_temperatura', 'battery_level') %}
+                {{ state_attr('sensor.despacho_temperatura', 'battery_level') | round }}
+            {% else %}
+                {{ states('sensor.despacho_temperatura') }}
+            {%- endif %}
+        icon_template: "{%- if state_attr('sensor.despacho_temperatura', 'battery_level') <= 5 %}mdi:battery-outline{%- elif state_attr('sensor.despacho_temperatura', 'battery_level') >= 95 %}mdi:battery{% else %}mdi:battery-{{(state_attr('sensor.despacho_temperatura', 'battery_level') | float / 10) | round*10 }}{%- endif %}"
+        unit_of_measurement: '%'
+        device_class: battery
+
+      battery_dormitorio_temperatura:
+        friendly_name: "Dormitorio Temperatura"
+        value_template: >
+            {%- if state_attr('sensor.dormitorio_temperatura', 'battery_level') %}
+                {{ state_attr('sensor.dormitorio_temperatura', 'battery_level') | round }}
+            {% else %}
+                {{ states('sensor.dormitorio_temperatura') }}
+            {%- endif %}
+        icon_template: "{%- if state_attr('sensor.dormitorio_temperatura', 'battery_level') <= 5 %}mdi:battery-outline{%- elif state_attr('sensor.dormitorio_temperatura', 'battery_level') >= 95 %}mdi:battery{% else %}mdi:battery-{{(state_attr('sensor.dormitorio_temperatura', 'battery_level') | float / 10) | round*10 }}{%- endif %}"
+        unit_of_measurement: '%'
+        device_class: battery
+
+      battery_ania_temperatura:
+        friendly_name: "Ania Temperatura"
+        value_template: >
+            {%- if state_attr('sensor.ania_temperatura', 'battery_level') %}
+                {{ state_attr('sensor.ania_temperatura', 'battery_level') | round }}
+            {% else %}
+                {{ states('sensor.ania_temperatura') }}
+            {%- endif %}
+        icon_template: "{%- if state_attr('sensor.ania_temperatura', 'battery_level') <= 5 %}mdi:battery-outline{%- elif state_attr('sensor.ania_temperatura', 'battery_level') >= 95 %}mdi:battery{% else %}mdi:battery-{{(state_attr('sensor.ania_temperatura', 'battery_level') | float / 10) | round*10 }}{%- endif %}"
+        unit_of_measurement: '%'
+        device_class: battery
+
+      battery_invitados_temperatura:
+        friendly_name: "Invitados Temperatura"
+        value_template: >
+            {%- if state_attr('sensor.invitados_temperatura', 'battery_level') %}
+                {{ state_attr('sensor.invitados_temperatura', 'battery_level') | round }}
+            {% else %}
+                {{ states('sensor.invitados_temperatura') }}
+            {%- endif %}
+        icon_template: "{%- if state_attr('sensor.invitados_temperatura', 'battery_level') <= 5 %}mdi:battery-outline{%- elif state_attr('sensor.invitados_temperatura', 'battery_level') >= 95 %}mdi:battery{% else %}mdi:battery-{{(state_attr('sensor.invitados_temperatura', 'battery_level') | float / 10) | round*10 }}{%- endif %}"
+        unit_of_measurement: '%'
+        device_class: battery
+
+      battery_banyo_temperatura:
+        friendly_name: "Baño Temperatura"
+        value_template: >
+            {%- if state_attr('sensor.banyo_temperatura', 'battery_level') %}
+                {{ state_attr('sensor.banyo_temperatura', 'battery_level') | round }}
+            {% else %}
+                {{ states('sensor.banyo_temperatura') }}
+            {%- endif %}
+        icon_template: "{%- if state_attr('sensor.banyo_temperatura', 'battery_level') <= 5 %}mdi:battery-outline{%- elif state_attr('sensor.banyo_temperatura', 'battery_level') >= 95 %}mdi:battery{% else %}mdi:battery-{{(state_attr('sensor.banyo_temperatura', 'battery_level') | float / 10) | round*10 }}{%- endif %}"
+        unit_of_measurement: '%'
+        device_class: battery
+
+      battery_balcon_temperatura:
+        friendly_name: "Balcon Temperatura"
+        value_template: >
+            {%- if state_attr('sensor.balcon_temperatura', 'battery_level') %}
+                {{ state_attr('sensor.balcon_temperatura', 'battery_level') | round }}
+            {% else %}
+                {{ states('sensor.balcon_temperatura') }}
+            {%- endif %}
+        icon_template: "{%- if state_attr('sensor.balcon_temperatura', 'battery_level') <= 5 %}mdi:battery-outline{%- elif state_attr('sensor.balcon_temperatura', 'battery_level') >= 95 %}mdi:battery{% else %}mdi:battery-{{(state_attr('sensor.balcon_temperatura', 'battery_level') | float / 10) | round*10 }}{%- endif %}"
+        unit_of_measurement: '%'
+        device_class: battery
+
+#  - platform: template
+#    sensors:
+#      entity_unavailable:
+#        icon_template: '{%- if is_state("sensor.entity_unavailable", "0") %}mdi:checkbox-marked{%else%}mdi:alert{% endif %}'
+#        value_template: >-
+#            {%- for state in states if ( 'unavailable' in state.state) and not (state.entity_id == 'binary_sensor.remote_ui') %}
+#              {{ state.entity_id }}
+#            {%- endfor %}
+#        entity_id: 
+#          - binary_sensor.llavero_jcc
+#          - binary_sensor.llavero_isset
+#          - binary_sensor.llavero_ania
+#          - binary_sensor.entrada_puerta
+#          - binary_sensor.comedor_ventana_izq
+#          - binary_sensor.comedor_ventana_der
+#          - binary_sensor.comedor_aire_acondicionado
+#          - binary_sensor.dormitorio_aire_acondicionado
+#          - binary_sensor.aa_agua
+#          - binary_sensor.cocina_movimiento
+#          - binary_sensor.comedor_movimiento
+#          - binary_sensor.entrada_pulsador
+#          - sensor.comedor_temperatura
+#          - sensor.cocina_temperatura
+#          - sensor.despacho_temperatura
+#          - sensor.dormitorio_temperatura
+#          - sensor.ania_temperatura
+#          - sensor.invitados_temperatura
+#          - sensor.banyo_temperatura
+#          - sensor.balcon_temperatura
+
+  - platform: template
+    sensors:
+      shellies_can_be_updated:
+        friendly_name: "Actualizaciones Shelly"
+        value_template: "{{ states('counter.shellies_can_be_updated') | int }}"
+        icon_template: mdi:alert
+
+counter:
+  shellies_can_be_updated:
+    initial: 0
+    step: 1
+
+
+###############
+##  Scripts  ##
+###############
+script:
+  mqtt_ask_shellies_firmware_upgrade_available:
+    alias: 'Verificar firmware'
+    sequence:
+      - service: counter.reset
+        data:
+          entity_id: counter.shellies_can_be_updated
+      - service: mqtt.publish
+        data_template:
+          payload: "announce"
+          topic: shellies/command
+          retain: false
+  mqtt_upgrade_all_shellies:
+    alias: 'Actualizar firmware'
+    sequence:
+      - service: mqtt.publish
+        data_template:
+          payload: "update_fw"
+          topic: shellies/command
+          retain: false
+      - service: counter.reset
+        data:
+          entity_id: counter.shellies_can_be_updated
+
+
+########################
+##  Automatizaciones  ##
+########################
+automation:
+#  - alias: 'Comprobación Entity'
+##    initial_state: true
+#    trigger:
+#      - platform: state
+#        entity_id: sensor.entity_unavailable
+#    action:  
+#      - service: homeassistant.update_entity
+#        entity_id: 
+#          - binary_sensor.llavero_jcc
+#          - binary_sensor.llavero_isset
+#          - binary_sensor.llavero_ania
+#          - binary_sensor.entrada_puerta
+#          - binary_sensor.comedor_ventana_izq
+#          - binary_sensor.comedor_ventana_der
+#          - binary_sensor.comedor_aire_acondicionado
+#          - binary_sensor.dormitorio_aire_acondicionado
+#          - binary_sensor.aa_agua
+#          - binary_sensor.cocina_movimiento
+#          - binary_sensor.comedor_movimiento
+#          - binary_sensor.entrada_pulsador
+#          - sensor.comedor_temperatura
+#          - sensor.cocina_temperatura
+#          - sensor.despacho_temperatura
+#          - sensor.dormitorio_temperatura
+#          - sensor.ania_temperatura
+#          - sensor.invitados_temperatura
+#          - sensor.banyo_temperatura
+#          - sensor.balcon_temperatura
+#      - service: notify.telegrama
+#        data_template:
+#          title: '*Actualizados Sensores Caídos menos estos*'
+#          message: "{{ states('sensor.entity_unavailable') }}"
+
+#  - alias: 'Entidades Caídas'
+##    initial_state: true
+#    trigger:
+#      - platform: state
+#        entity_id: sensor.entity_unavailable
+#    action:  
+#      - service: notify.telegram
+#        data_template:
+#          title: '*Entitades Caídas*'
+#          message: "{{ states('sensor.entity_unavailable') }}"
+
+  - alias: zigbee lost connection
+    initial_state: true
+    trigger:
+      - platform: state
+        entity_id:
+          - sensor.battery_entrada_puerta
+          - sensor.battery_comedor_ventana_izq
+          - sensor.battery_comedor_ventana_der
+          - sensor.battery_comedor_aa
+          - sensor.battery_dormitorio_aa
+          - sensor.battery_aa_agua
+          - sensor.battery_cocina_movimiento
+          - sensor.battery_comedor_movimiento
+          - sensor.battery_entrada_pulsador
+          - sensor.battery_comedor_temperatura
+          - sensor.battery_cocina_temperatura
+          - sensor.battery_despacho_temperatura
+          - sensor.battery_dormitorio_temperatura
+          - sensor.battery_ania_temperatura
+          - sensor.battery_invitados_temperatura
+          - sensor.battery_banyo_temperatura
+          - sensor.battery_balcon_temperatura
+        to: 'unavailable'
+        for: '00:01:00'
+    action:
+      - service: notify.telegram_jcc
+        data_template:
+          message: "Señal del sensor {{ trigger.entity_id }} perdida. REFRESCANDO"
+      - service: homeassistant.update_entity
+        entity_id: 
+          - trigger.entity_id
+
+  - alias: Aviso Low Battery
+    initial_state: true
+    trigger:
+      - platform: numeric_state
+        entity_id:
+          - sensor.battery_llavero_jcc            #CR1632
+          - sensor.battery_llavero_isset          #CR1632
+          - sensor.battery_llavero_ania           #CR1632
+          - sensor.battery_entrada_puerta         #CR1632
+          - sensor.battery_comedor_ventana_izq    #CR1632
+          - sensor.battery_comedor_ventana_der    #CR1632
+          - sensor.battery_comedor_aa             #CR1632
+          - sensor.battery_dormitorio_aa          #CR1632
+          - sensor.battery_aa_agua                #CR2032
+          - sensor.battery_cocina_movimiento      #CR2450
+          - sensor.battery_comedor_movimiento     #CR2450
+          - sensor.battery_entrada_pulsador       #CR2032
+          - sensor.battery_comedor_temperatura    #CR2032
+          - sensor.battery_cocina_temperatura     #CR2032
+          - sensor.battery_despacho_temperatura   #CR2032
+          - sensor.battery_dormitorio_temperatura #CR2032
+          - sensor.battery_ania_temperatura       #CR2032
+          - sensor.battery_invitados_temperatura  #CR2032
+          - sensor.battery_banyo_temperatura       #CR2032
+          - sensor.battery_balcon_temperatura     #CR2032
+        below: 15
+        for: '01:00:00'
+    action:
+      - service: notify.telegram_jcc
+        data_template:
+          message: "
+            La batería del {{ trigger.entity_id }} está por debajo del 15%. Controlar para sustituir
+
+            Tipo de batería: 
+            {% if trigger.entity_id == 'sensor.battery_llavero_jcc' or trigger.entity_id == 'binary_sensor.llavero_isset' or trigger.entity_id == 'binary_sensor.llavero_ania' or trigger.entity_id == 'binary_sensor.entrada_puerta' or trigger.entity_id == 'binary_sensor.comedor_ventana_izq' or trigger.entity_id == 'binary_sensor.comedor_ventana_der' or trigger.entity_id == 'binary_sensor.comedor_aire_acondicionado' or trigger.entity_id == 'binary_sensor.dormitorio_aire_acondicionado' %}
+              CR1632
+            {% elif trigger.entity_id == 'binary_sensor.cocina_movimiento' or trigger.entity_id == 'binary_sensor.comedor_movimiento' %}
+              CR2450
+            {% else %}
+              CR2032
+            {% endif %}"
+            
+  - alias: "Power state on HA start-up"
+    trigger:
+      platform: homeassistant
+      event: start
+    action:
+      - service: mqtt.publish
+        data:
+          topic: "cmnd/sonoffs/power1"
+          payload: ""
+      - service: mqtt.publish
+        data:
+          topic: "cmnd/sonoffs/power2"
+          payload: ""
+      - service: mqtt.publish
+        data:
+          topic: "cmnd/sonoffs/Power3"
+          payload: "" 
+      - service: mqtt.publish
+        data:
+          topic: "cmnd/sonoffs/power4"
+          payload: ""
+
+#https://github.com/miquelbotanch/homeassistant_shellies
+  - alias: Check shellies firmware update
+    initial_state: true
+    trigger:
+      platform: time
+      at: '20:00:00'
+    action:
+      service: script.mqtt_ask_shellies_firmware_upgrade_available
+  
+  - alias: "Notify Shelly Update available"
+    id: 'pnsua'
+    trigger:
+      platform: mqtt
+      topic: shellies/announce
+    condition:
+      condition: template
+      value_template: "{{ trigger.payload_json['new_fw'] == true }}"
+    action:
+      - service: counter.increment
+        data:
+          entity_id: counter.shellies_can_be_updated
+      - service: persistent_notification.create
+        data:
+          title: "Update available!"
+          message: "Nueva version de firnware Shelly"
+          notification_id: shellyUpdateAvailable
+      - service: notify.telegram_jcc
+        data_template:
+          message: "Actualización firmware disponible para Shelly {{ trigger.payload_json['id'] }}. IP: {{ trigger.payload_json['ip'] }}"
+
+
+#########################
+##  Personalizaciones  ##
+#########################
+homeassistant:
+  customize:
+    script.mqtt_upgrade_all_shellies:
+      friendly_name: Upgrade all Shellies
+    automation.zigbee_lost_connection:
+      icon: mdi:zigbee
+    automation.aviso_low_battery:
+      icon: mdi:battery-alert-variant-outline

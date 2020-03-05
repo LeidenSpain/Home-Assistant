@@ -1,0 +1,100 @@
+######################
+###  Bot Telegram  ###
+######################
+telegram_bot:
+  - platform: polling
+    api_key: !secret telegram_key
+    allowed_chat_ids:
+      - !secret telegram_JCC
+      - !secret telegram_Isset
+      - !secret telegram_Familia
+
+notify:
+  - name: 'Telegram JCC'
+    platform: telegram
+    api_key: !secret telegram_key
+    chat_id: !secret telegram_JCC
+
+  - name: 'Telegram Isset'
+    platform: telegram
+    api_key: !secret telegram_key
+    chat_id: !secret telegram_Isset
+
+  - name: 'Telegram Familia'
+    platform: telegram
+    api_key: !secret telegram_key
+    chat_id: !secret telegram_Familia
+
+
+########################    
+##  Automatizaciones  ##
+########################
+automation:
+  - alias: '[TELEGRAM] bot start'
+    trigger:
+      - platform: event
+        event_type: telegram_command
+        event_data:
+          command: '/start'
+    action:
+      - service: telegram_bot.send_message
+        data_template:
+          target: '{{ trigger.event.data.user_id }}'
+          title: 'Bienvenid@ a la domótica de casa {{ trigger.event.data.user_id }}'
+          message: 'Panel de Control'
+          inline_keyboard: >-
+            temperaturas:/opcion01, meteo:/opcion02
+            {% if is_state('trigger.event.data.user_id', '475662426') %}
+            - 'sistema:/opcion11, HA:/opcion12'
+            {% endif %}
+
+  - alias: '[TELEGRAM] bot cancel'
+    trigger:
+      - platform: event
+        event_type: telegram_callback
+        event_data:
+          command: '/cancel'
+    action:
+      - service: telegram_bot.send_message
+        data_template:
+          target: '{{ trigger.event.data.user_id }}'
+          title: 'Bienvenid@ a la domótica de casa'
+          message: 'Panel de Control'
+          inline_keyboard:
+            - 'temperaturas:/opcion01, informacion:/opcion02'
+
+  - id: '1001'
+    alias: '[TELEGRAM] temperaturas casa'
+    trigger:
+      - platform: event
+        event_type: telegram_callback
+        event_data:
+          data: '/opcion01'
+    action:
+      - service: telegram_bot.answer_callback_query
+        data_template:
+          callback_query_id: '{{ trigger.event.data.id }}'
+          message: 'Submenu temperaturas'
+      - service: telegram_bot.send_message
+        data_template:
+          target: '{{ trigger.event.data.user_id }}'
+          title: ''
+          message: >-
+             *Comedor:*    {{states('sensor.comedor_temperatura')}}ºC  y  {{states('sensor.comedor_humedad')}}%
+
+             *Dormitorio:* {{states('sensor.dormitorio_temperatura')}}ºC  y  {{states('sensor.dormitorio_humedad')}}%
+             
+             *Ania:*       {{states('sensor.ania_temperatura')}}ºC  y  {{states('sensor.ania_humedad')}}%
+             
+             *Cocina:*     {{states('sensor.cocina_temperatura')}}ºC  y  {{states('sensor.cocina_humedad')}}%
+             
+             *Despacho:*   {{states('sensor.despacho_temperatura')}}ºC  y  {{states('sensor.despacho_humedad')}}%
+             
+             *Baño:*       {{states('sensor.banyo_temperatura')}}ºC  y  {{states('sensor.banyo_humedad')}}%
+             
+             *Invitados:*  {{states('sensor.invitados_temperatura')}}ºC  y  {{states('sensor.invitados_humedad')}}%
+             
+             *Balcón:*     {{states('sensor.balcon_temperatura')}}ºC  y  {{states('sensor.balcon_humedad')}}%
+          data:
+            inline_keyboard:
+              - 'Principal:/cancel'

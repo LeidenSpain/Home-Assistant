@@ -1,0 +1,29 @@
+################
+##  Sensores  ##
+################
+upnp:
+  port_mapping: true
+  ports:
+    hass: 8000
+    5000: 5000
+
+
+###################
+##  Informacion  ##
+###################
+speedtestdotnet:
+  scan_interval:
+    minutes: 30
+  monitored_conditions:
+    - ping
+    - download
+    - upload
+ 
+      
+#######################
+##  Personalizacion  ##
+#######################
+homeassistant:
+  customize:
+    sensor.uptime:
+      hidden: true

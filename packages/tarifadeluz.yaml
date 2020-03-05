@@ -1,0 +1,107 @@
+################
+##  Sensores  ##
+################
+sensor:
+  - platform: scrape
+    resource: http://www.tarifadeluz.com
+    name: luz_scrape_fecha
+    scan_interval: 99999
+    select: 'div:nth-of-type(9)'
+    value_template: >-
+      {% for i in range(2, 8) %}
+        {{ value.split()[i] }}
+      {% endfor%}
+
+  - platform: scrape
+    resource: http://www.tarifadeluz.com/
+    name: luz_scrape_hora
+    scan_interval: 300
+    select: 'div:nth-of-type(6)'
+    value_template: '{{ value.split()[7] }}'
+
+  - platform: scrape
+    resource: http://www.tarifadeluz.com/
+    name: Actual (€/KWH)
+    scan_interval: 300
+    select: 'font[color^="white"] > b'
+    value_template: '{{ value.split(" ")[0] }}'
+    unit_of_measurement: '€/kWh'
+      
+  - platform: scrape
+    resource: http://www.tarifadeluz.com/
+    name: "Minimo Diario (Hora)"
+    scan_interval: 99999
+    select: 'div:nth-of-type(10)'
+    value_template: '{{ value.split()[4] }}'
+
+  - platform: scrape
+    resource: http://www.tarifadeluz.com/
+    name: "Minimo Diario (€/KWH)"
+    scan_interval: 99999
+    select: 'div:nth-of-type(10)'
+    value_template: '{{ value.split()[0] }}'
+    unit_of_measurement: '€/kWh'
+  
+  - platform: scrape
+    resource: http://www.tarifadeluz.com/
+    name: "Maximo Diario (Hora)"
+    scan_interval: 99999
+    select: 'div:nth-of-type(13)'
+    value_template: '{{ value.split()[4] }}'
+
+  - platform: scrape
+    resource: http://www.tarifadeluz.com/
+    name: "Maximo Diario (€/KWH)"
+    scan_interval: 99999
+    select: 'div:nth-of-type(13)'
+    value_template: '{{ value.split()[0] }}'
+    unit_of_measurement: '€/kWh'
+
+
+########################
+##  Automatizaciones  ##
+########################
+automation:
+  - alias: Scrape Tarifa Luz
+    initial_state: true
+    trigger:
+      - platform: time
+        at: "00:01:00"
+      - platform: time
+        at: "00:11:00"
+      - platform: time
+        at: "00:21:00"
+    action:
+      - service: homeassistant.update_entity
+        entity_id: sensor.luz_scrape_fecha
+      - service: homeassistant.update_entity
+        entity_id: sensor.minimo_diario_hora
+      - service: homeassistant.update_entity
+        entity_id: sensor.minimo_diario_eur_kwh
+      - service: homeassistant.update_entity
+        entity_id: sensor.maximo_diario_hora
+      - service: homeassistant.update_entity
+        entity_id: sensor.maximo_diario_eur_kwh
+
+
+#########################
+##  Personalizaciones  ##
+#########################
+homeassistant:
+  customize:
+    sensor.luz_scrape_fecha:
+      friendly_name: Fecha
+      icon: mdi:calendar-range
+    sensor.luz_scrape_hora:
+      friendly_name: Hora Recogida Datos    
+      icon: mdi:clock-outline
+    sensor.actual_eur_kwh:
+      icon: mdi:currency-eur
+    sensor.minimo_diario_hora:
+      icon: mdi:thumb-up
+    sensor.minimo_diario_eur_kwh:
+      icon: mdi:currency-eur
+    sensor.maximo_diario_hora:
+      icon: mdi:thumb-down
+    sensor.maximo_diario_eur_kwh:
+      icon: mdi:currency-eur

@@ -1,0 +1,144 @@
+#####################
+##  Informaciones  ##
+#####################
+sensor:
+  - platform: uptime
+    unit_of_measurement: minutes
+
+  - platform: template
+    sensors:
+      uptime_templated:
+        entity_id: sensor.uptime
+        icon_template: mdi:clock-start
+        value_template: >-
+          {% set uptime = states('sensor.uptime') | int %}
+          {% set minutes = (uptime % 60) | int %}
+          {% set hours = ((uptime % 1440) / 60) | int %}
+          {% set days = (uptime / 1440) | int %}
+          {{ days }}d {{ ' : ' }} {{ hours }}h {{ ' : ' }} {{ minutes }}m
+      count_sensor:
+        value_template: '{{ states.sensor | count }}'
+        friendly_name: Sensor
+        entity_id: sensor.date
+      count_switch:
+        value_template: '{{ states.switch | count }}'
+        friendly_name: Switch
+        entity_id: sensor.date
+      count_binarysensor:
+        value_template: '{{ states.binary_sensor | count }}'
+        friendly_name: Binary Sensor
+        entity_id: sensor.date
+      count_automation:
+        value_template: '{{ states.automation | count }}'
+        friendly_name: Automation
+        entity_id: sensor.date
+      count_inputboolean:
+        value_template: '{{ states.input_boolean | count }}'
+        friendly_name: Input Boolean
+        entity_id: sensor.date
+      count_inputnumber:
+        value_template: '{{ states.input_number | count }}'
+        friendly_name: Input Number
+        entity_id: sensor.date
+      count_inputselect:
+        value_template: '{{ states.input_select | count }}'
+        friendly_name: Input Select
+        entity_id: sensor.date
+      count_inputtext:
+        value_template: '{{ states.input_text | count }}'
+        friendly_name: Input Text
+        entity_id: sensor.date
+      count_inputdatetime:
+        value_template: '{{ states.input_datetime | count }}'
+        friendly_name: Input Datetime
+        entity_id: sensor.date
+      count_group:
+        value_template: '{{ states.group | count }}'
+        friendly_name: Group
+        entity_id: sensor.date
+      count_script:
+        value_template: '{{ states.script | count }}'
+        friendly_name: Script
+        entity_id: sensor.date
+      count_camera:
+        value_template: '{{ states.camera | count }}'
+        friendly_name: Camera
+        entity_id: sensor.date
+
+      last_ha_version:
+        friendly_name: "Last HA Version"
+        entity_id: binary_sensor.updater
+        value_template: "{{ state_attr('binary_sensor.updater', 'newest_version') }}"
+
+  - platform: version
+    scan_interval: 1200
+
+  - platform: filesize
+    file_paths:
+      - /home/homeassistant/.homeassistant/home-assistant_v2.db
+      - /home/homeassistant/.homeassistant/home-assistant.log 
+
+
+###############
+##  Scripts  ##
+###############
+script:
+  restart_home_assistant:
+    alias: Restart Home Assistant
+    sequence:
+      - service: homeassistant.restart
+  no_script:
+    sequence:
+      - delay: 00:00:00
+
+ 
+########################
+##  Automatizaciones  ##
+########################
+automation: 
+  - alias: "Notify Home Assistant Update available"
+    trigger:
+      - platform: state
+        entity_id: binary_sensor.updater
+        to: 'on'
+    action:
+      - service: persistent_notification.create
+        data_template:
+          title: "Actualización disponible HA"
+          message: "Nueva versión Home Assistant {{ state_attr('binary_sensor.updater', 'newest_version') }} disponible."
+
+
+################
+##  Comandos  ##
+################
+shell_command:
+
+
+#######################
+##  Personalización  ##
+#######################
+homeassistant:
+  customize:
+    sensor.uptime:
+      hidden: true
+    sensor.uptime_templated:
+      friendly_name: Tiempo activo
+      icon: mdi:clock-start
+    sensor.current_version:
+      friendly_name: Versión actual
+      icon: mdi:home-assistant
+    sensor.last_ha_version:
+      friendly_name: Última versión
+      icon: mdi:home-alert
+    script.restart_home_assistant:
+      friendly_name: Reiniciar HA
+      icon: mdi:restart
+    script.update_home_assistant:
+      friendly_name: Actualizar HA
+      icon: mdi:update
+#      icon: mdi:shield-cross-outline
+#      icon: mdi:skull-crossbones-outline
+    updater.updater:
+       hidden: true
+    automation.zigbee_lost_connection:
+      friendly_name: Reinicio perdida zigbee

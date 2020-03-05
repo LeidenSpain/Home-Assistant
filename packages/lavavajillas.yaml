@@ -1,0 +1,181 @@
+################
+##  Sensores  ##
+################
+sensor:
+  - platform: mqtt
+    name: "Lavavajillas: Watios"
+    icon: mdi:alpha-w-circle-outline
+    state_topic: "tele/lavavajillas/SENSOR"
+    value_template: "{{ value_json.ENERGY.Power }}"
+#    value_template: '{{ value_json.ENERGY["Power"] }}'
+    availability_topic: "tele/lavavajillas/LWT"
+    unit_of_measurement: "W"
+    payload_available: "Online"
+    payload_not_available: "Offline"
+
+  - platform: mqtt
+    name: "Lavavajillas: Amperios"
+    icon: mdi:alpha-a-circle-outline
+    state_topic: "tele/lavavajillas/SENSOR"
+    value_template: "{{ value_json.ENERGY.Current }}"
+#    value_template: '{{ value_json.ENERGY["Current"] }}'
+    unit_of_measurement: 'A'
+    payload_available: "Online"
+    payload_not_available: "Offline"
+
+  - platform: mqtt
+    name: "Lavavajillas: Voltios"
+    icon: mdi:alpha-v-circle-outline
+    state_topic: "tele/lavavajillas/SENSOR"
+    value_template: "{{ value_json.ENERGY.Voltage }}"
+#    value_template: '{{ value_json.ENERGY["Voltage"] }}'
+    availability_topic: "tele/lavavajillas/LWT"
+    unit_of_measurement: "V"
+    payload_available: "Online"
+    payload_not_available: "Offline"
+
+  - platform: mqtt
+    name: "Lavavajillas: Hoy"
+    icon: mdi:calendar-range
+    state_topic: "tele/lavavajillas/SENSOR"
+    value_template: "{{ value_json.ENERGY.Today }}"
+#    value_template: '{{ value_json.ENERGY["Today"] }}'
+    availability_topic: "tele/lavavajillas/LWT"
+    unit_of_measurement: "kWh"
+    payload_available: "Online"
+    payload_not_available: "Offline"
+
+  - platform: mqtt
+    name: "Lavavajillas: Ayer"
+    icon: mdi:calendar-range
+    state_topic: "tele/lavavajillas/SENSOR"
+    value_template: "{{ value_json.ENERGY.Yesterday }}"
+#    value_template: '{{ value_json.ENERGY["Yesterday"] }}'
+    availability_topic: "tele/lavavajillas/LWT"
+    unit_of_measurement: "kWh"
+    payload_available: "Online"
+    payload_not_available: "Offline"
+    
+  - platform: mqtt
+    name: "Lavavajillas: Total"
+    icon: mdi:calendar-range
+    state_topic: "tele/lavavajillas/SENSOR"
+    value_template: "{{ value_json.ENERGY.Total }}"
+#    value_template: '{{ value_json.ENERGY["Total"] }}'
+    availability_topic: "tele/lavavajillas/LWT"
+    unit_of_measurement: "kWh"
+    payload_available: "Online"
+    payload_not_available: "Offline"
+
+  - platform: template
+    sensors:
+      lavavajillas_current_power_cost:
+        value_template: "{{ ((states('sensor.lavavajillas_watios')|float) * (states('sensor.actual_eur_kwh')|float) / 1000) | round(5) }}"
+        friendly_name: 'Coste Electricidad Actual'
+        icon_template: mdi:currency-eur
+        unit_of_measurement: '€/H'
+
+switch:
+  - platform: mqtt
+    name: "Lavavajillas"
+    icon: mdi:dishwasher
+    state_topic: "stat/lavavajillas/POWER"
+    command_topic: "cmnd/lavavajillas/POWER"
+    availability_topic: "tele/lavavajillas/LWT"
+    payload_on: "ON"
+    payload_off: "OFF"
+    payload_available: "Online"
+    payload_not_available: "Offline"
+    retain: false
+
+utility_meter:
+  lavavajillas_cost_hourly:
+    source: sensor.lavavajillas_current_power_cost
+    cycle: hourly
+  lavavajillas_cost_daily:
+    source: sensor.lavavajillas_current_power_cost
+    cycle: daily
+  lavavajillas_cost_weekly:
+    source: sensor.lavavajillas_current_power_cost
+    cycle: weekly
+  lavavajillas_cost_monthly:
+    source: sensor.lavavajillas_current_power_cost
+    cycle: monthly
+  lavavajillas_cost_yearly:
+    source: sensor.current_power_cost_server
+    cycle: yearly
+
+input_datetime:
+  lavavajillas_on:
+    name: Hora encendido
+    has_date: false
+    has_time: true
+
+
+###############
+##  Scripts  ##
+###############
+script:
+  lavavajillas_auto:
+    alias: Lavavajillas timer auto
+    sequence:
+      - service: automation.turn_on
+        data:
+          entity_id: automation.lavavajillas_on
+      - service: input_datetime.set_datetime
+        data_template:
+          entity_id: input_datetime.lavavajillas_on
+          time: "{{ (states('sensor.minimo_diario_hora')) }}"
+      - service: switch.turn_off
+        entity_id: switch.lavavajillas
+     
+ 
+########################
+##  Automatizaciones  ##
+########################
+automation:
+  - alias: lavavajillas_on
+    trigger:
+      - platform: template
+        value_template: "{{ states('sensor.time') == (state_attr('input_datetime.lavavajillas_on', 'timestamp') | int | timestamp_custom('%H:%M', False)) }}"
+    action:
+      - service: switch.turn_on
+        entity_id: switch.lavavajillas
+      - service: automation.turn_off
+        entity_id: automation.lavavajillas_on
+
+
+#########################
+##  Personalizaciones  ##
+#########################
+homeassistant:
+  customize:
+    input_datetime.lavavajillas_on:
+      icon: mdi:clock-outline   
+    switch.lavavajillas:
+      icon: mdi:dishwasher
+    automation.lavavajillas_on:
+      friendly_name: Encendido programado
+      icon: mdi:calendar-clock
+    script.lavavajillas_auto:
+      friendly_name: Programa automatico
+    sensor.lavavajillas_cost_hourly:
+      friendly_name: Gasto acumulado (Hora)
+      icon: mdi:currency-eur
+      unit_of_measurement: '€'
+    sensor.lavavajillas_cost_daily:
+      friendly_name: Gasto acumulado (Día)
+      icon: mdi:currency-eur
+      unit_of_measurement: '€'
+    sensor.lavavajillas_cost_weekly:
+      friendly_name: Gasto acumulado (Semana)
+      icon: mdi:currency-eur
+      unit_of_measurement: '€'
+    sensor.lavavajillas_cost_monthly:
+      friendly_name: Gasto acumulado (Mes)
+      icon: mdi:currency-eur
+      unit_of_measurement: '€'
+    sensor.lavavajillas_cost_yearly:
+      friendly_name: Gasto acumulado (Año)
+      icon: mdi:currency-eur
+      unit_of_measurement: '€'

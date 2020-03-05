@@ -1,0 +1,327 @@
+################
+##  Sensores  ##
+################
+sensor:
+  - platform: rest
+    resource: https://api.esios.ree.es/archives/70/download_json
+    name: precioluz_ree
+    method: GET
+    json_attributes:
+      - PVPC
+    value_template: ''
+    scan_interval: 99999
+
+  - platform: template
+    sensors:
+      precioluz_ree_fecha:
+        friendly_name: 'Fecha coste luz'
+        value_template: '{{ states.sensor.precioluz_ree.attributes.PVPC.0.Dia }}'
+        icon_template: mdi:calendar-range
+#        unit_of_measurement: 'Fecha datos'
+#        attribute_templates:
+#          precioluz_00: '{{ states.sensor.precioluz_ree.attributes.PVPC.0.GEN | replace(",", ".") | float | multiply(0.001) | round (3)}}'
+#          precioluz_01: '{{ states.sensor.precioluz_ree.attributes.PVPC.1.GEN | replace(",", ".") | float | multiply(0.001) | round (3)}}'
+#          precioluz_02: '{{ states.sensor.precioluz_ree.attributes.PVPC.2.GEN | replace(",", ".") | float | multiply(0.001) | round (3)}}'
+#          precioluz_03: '{{ states.sensor.precioluz_ree.attributes.PVPC.3.GEN | replace(",", ".") | float | multiply(0.001) | round (3)}}'
+#          precioluz_04: '{{ states.sensor.precioluz_ree.attributes.PVPC.4.GEN | replace(",", ".") | float | multiply(0.001) | round (3)}}'
+#          precioluz_05: '{{ states.sensor.precioluz_ree.attributes.PVPC.5.GEN | replace(",", ".") | float | multiply(0.001) | round (3)}}'
+#          precioluz_06: '{{ states.sensor.precioluz_ree.attributes.PVPC.6.GEN | replace(",", ".") | float | multiply(0.001) | round (3)}}'
+#          precioluz_07: '{{ states.sensor.precioluz_ree.attributes.PVPC.7.GEN | replace(",", ".") | float | multiply(0.001) | round (3)}}'
+#          precioluz_08: '{{ states.sensor.precioluz_ree.attributes.PVPC.8.GEN | replace(",", ".") | float | multiply(0.001) | round (3)}}'
+#          precioluz_09: '{{ states.sensor.precioluz_ree.attributes.PVPC.9.GEN | replace(",", ".") | float | multiply(0.001) | round (3)}}'
+#          precioluz_10: '{{ states.sensor.precioluz_ree.attributes.PVPC.10.GEN | replace(",", ".") | float | multiply(0.001) | round (3)}}'
+#          precioluz_11: '{{ states.sensor.precioluz_ree.attributes.PVPC.11.GEN | replace(",", ".") | float | multiply(0.001) | round (3)}}'
+#          precioluz_12: '{{ states.sensor.precioluz_ree.attributes.PVPC.12.GEN | replace(",", ".") | float | multiply(0.001) | round (3)}}'
+#          precioluz_13: '{{ states.sensor.precioluz_ree.attributes.PVPC.13.GEN | replace(",", ".") | float | multiply(0.001) | round (3)}}'
+#          precioluz_14: '{{ states.sensor.precioluz_ree.attributes.PVPC.14.GEN | replace(",", ".") | float | multiply(0.001) | round (3)}}'
+#          precioluz_15: '{{ states.sensor.precioluz_ree.attributes.PVPC.15.GEN | replace(",", ".") | float | multiply(0.001) | round (3)}}'
+#          precioluz_16: '{{ states.sensor.precioluz_ree.attributes.PVPC.16.GEN | replace(",", ".") | float | multiply(0.001) | round (3)}}'
+#          precioluz_17: '{{ states.sensor.precioluz_ree.attributes.PVPC.17.GEN | replace(",", ".") | float | multiply(0.001) | round (3)}}'
+#          precioluz_18: '{{ states.sensor.precioluz_ree.attributes.PVPC.18.GEN | replace(",", ".") | float | multiply(0.001) | round (3)}}'
+#          precioluz_19: '{{ states.sensor.precioluz_ree.attributes.PVPC.19.GEN | replace(",", ".") | float | multiply(0.001) | round (3)}}'
+#          precioluz_20: '{{ states.sensor.precioluz_ree.attributes.PVPC.20.GEN | replace(",", ".") | float | multiply(0.001) | round (3)}}'
+#          precioluz_21: '{{ states.sensor.precioluz_ree.attributes.PVPC.21.GEN | replace(",", ".") | float | multiply(0.001) | round (3)}}'
+#          precioluz_22: '{{ states.sensor.precioluz_ree.attributes.PVPC.22.GEN | replace(",", ".") | float | multiply(0.001) | round (3)}}'
+#          precioluz_23: '{{ states.sensor.precioluz_ree.attributes.PVPC.23.GEN | replace(",", ".") | float | multiply(0.001) | round (3)}}'
+
+      precioluz_00:
+        friendly_name: 'Precio 00:00'
+        value_template: '{{ states.sensor.precioluz_ree.attributes.PVPC.0.GEN | replace(",", ".") | float | multiply(0.001) | round (3)}}'
+        unit_of_measurement: '€/kWh'
+      precioluz_01:
+        friendly_name: 'Precio 01:00'
+        value_template: '{{ states.sensor.precioluz_ree.attributes.PVPC.1.GEN | replace(",", ".") | float | multiply(0.001) | round (3)}}'
+        unit_of_measurement: '€/kWh'
+      precioluz_02:
+        friendly_name: 'Precio 02:00'
+        value_template: '{{ states.sensor.precioluz_ree.attributes.PVPC.2.GEN | replace(",", ".") | float | multiply(0.001) | round (3)}}'
+        unit_of_measurement: '€/kWh'
+      precioluz_03:
+        friendly_name: 'Precio 03:00'
+        value_template: '{{ states.sensor.precioluz_ree.attributes.PVPC.3.GEN | replace(",", ".") | float | multiply(0.001) | round (3)}}'
+        unit_of_measurement: '€/kWh'
+      precioluz_04:
+        friendly_name: 'Precio 04:00'
+        value_template: '{{ states.sensor.precioluz_ree.attributes.PVPC.4.GEN | replace(",", ".") | float | multiply(0.001) | round (3)}}'
+        unit_of_measurement: '€/kWh'
+      precioluz_05:
+        friendly_name: 'Precio 05:00'
+        value_template: '{{ states.sensor.precioluz_ree.attributes.PVPC.5.GEN | replace(",", ".") | float | multiply(0.001) | round (3)}}'
+        unit_of_measurement: '€/kWh'
+      precioluz_06:
+        friendly_name: 'Precio 06:00'
+        value_template: '{{ states.sensor.precioluz_ree.attributes.PVPC.6.GEN | replace(",", ".") | float | multiply(0.001) | round (3)}}'
+        unit_of_measurement: '€/kWh'
+      precioluz_07:
+        friendly_name: 'Precio 07:00'
+        value_template: '{{ states.sensor.precioluz_ree.attributes.PVPC.7.GEN | replace(",", ".") | float | multiply(0.001) | round (3)}}'
+        unit_of_measurement: '€/kWh'
+      precioluz_08:
+        friendly_name: 'Precio 08:00'
+        value_template: '{{ states.sensor.precioluz_ree.attributes.PVPC.8.GEN | replace(",", ".") | float | multiply(0.001) | round (3)}}'
+        unit_of_measurement: '€/kWh'
+      precioluz_09:
+        friendly_name: 'Precio 09:00'
+        value_template: '{{ states.sensor.precioluz_ree.attributes.PVPC.9.GEN | replace(",", ".") | float | multiply(0.001) | round (3)}}'
+        unit_of_measurement: '€/kWh'
+      precioluz_10:
+        friendly_name: 'Precio 10:00'
+        value_template: '{{ states.sensor.precioluz_ree.attributes.PVPC.10.GEN | replace(",", ".") | float | multiply(0.001) | round (3)}}'
+        unit_of_measurement: '€/kWh'
+      precioluz_11:
+        friendly_name: 'Precio 11:00'
+        value_template: '{{ states.sensor.precioluz_ree.attributes.PVPC.11.GEN | replace(",", ".") | float | multiply(0.001) | round (3)}}'
+        unit_of_measurement: '€/kWh'
+      precioluz_12:
+        friendly_name: 'Precio 12:00'
+        value_template: '{{ states.sensor.precioluz_ree.attributes.PVPC.12.GEN | replace(",", ".") | float | multiply(0.001) | round (3)}}'
+        unit_of_measurement: '€/kWh'
+      precioluz_13:
+        friendly_name: 'Precio 13:00'
+        value_template: '{{ states.sensor.precioluz_ree.attributes.PVPC.13.GEN | replace(",", ".") | float | multiply(0.001) | round (3)}}'
+        unit_of_measurement: '€/kWh'
+      precioluz_14:
+        friendly_name: 'Precio 14:00'
+        value_template: '{{ states.sensor.precioluz_ree.attributes.PVPC.14.GEN | replace(",", ".") | float | multiply(0.001) | round (3)}}'
+        unit_of_measurement: '€/kWh'
+      precioluz_15:
+        friendly_name: 'Precio 15:00'
+        value_template: '{{ states.sensor.precioluz_ree.attributes.PVPC.15.GEN | replace(",", ".") | float | multiply(0.001) | round (3)}}'
+        unit_of_measurement: '€/kWh'
+      precioluz_16:
+        friendly_name: 'Precio 16:00'
+        value_template: '{{ states.sensor.precioluz_ree.attributes.PVPC.16.GEN | replace(",", ".") | float | multiply(0.001) | round (3)}}'
+        unit_of_measurement: '€/kWh'
+      precioluz_17:
+        friendly_name: 'Precio 17:00'
+        value_template: '{{ states.sensor.precioluz_ree.attributes.PVPC.17.GEN | replace(",", ".") | float | multiply(0.001) | round (3)}}'
+        unit_of_measurement: '€/kWh'
+      precioluz_18:
+        friendly_name: 'Precio 18:00'
+        value_template: '{{ states.sensor.precioluz_ree.attributes.PVPC.18.GEN | replace(",", ".") | float | multiply(0.001) | round (3)}}'
+        unit_of_measurement: '€/kWh'
+      precioluz_19:
+        friendly_name: 'Precio 19:00'
+        value_template: '{{ states.sensor.precioluz_ree.attributes.PVPC.19.GEN | replace(",", ".") | float | multiply(0.001) | round (3)}}'
+        unit_of_measurement: '€/kWh'
+      precioluz_20:
+        friendly_name: 'Precio 20:00'
+        value_template: '{{ states.sensor.precioluz_ree.attributes.PVPC.20.GEN | replace(",", ".") | float | multiply(0.001) | round (3)}}'
+        unit_of_measurement: '€/kWh'
+      precioluz_21:
+        friendly_name: 'Precio 21:00'
+        value_template: '{{ states.sensor.precioluz_ree.attributes.PVPC.21.GEN | replace(",", ".") | float | multiply(0.001) | round (3)}}'
+        unit_of_measurement: '€/kWh'
+      precioluz_22:
+        friendly_name: 'Precio 22:00'
+        value_template: '{{ states.sensor.precioluz_ree.attributes.PVPC.22.GEN | replace(",", ".") | float | multiply(0.001) | round (3)}}'
+        unit_of_measurement: '€/kWh'
+      precioluz_23:
+        friendly_name: 'Precio 23:00'
+        value_template: '{{ states.sensor.precioluz_ree.attributes.PVPC.23.GEN | replace(",", ".") | float | multiply(0.001) | round (3)}}'
+        unit_of_measurement: '€/kWh'
+
+  - platform: mqtt
+    name: precioluz_20ant
+    state_topic: "home/ree_mqtt/precioluz_20ant"
+    unit_of_measurement: '€/kWh'
+
+  - platform: mqtt
+    name: precioluz_21ant
+    state_topic: "home/ree_mqtt/precioluz_21ant"
+    unit_of_measurement: '€/kWh'
+
+  - platform: mqtt
+    name: precioluz_22ant
+    state_topic: "home/ree_mqtt/precioluz_22ant"
+    unit_of_measurement: '€/kWh'
+
+  - platform: mqtt
+    name: precioluz_23ant
+    state_topic: "home/ree_mqtt/precioluz_23ant"
+    unit_of_measurement: '€/kWh'
+
+
+########################
+##  Automatizaciones  ##
+########################
+automation:
+  - alias: JSON Tarifa Luz Copia MQTT
+    trigger:
+      - platform: time
+        at: "20:10:00"
+    action:
+      - service: mqtt.publish
+        data_template:
+          topic: "home/ree_mqtt/precioluz_20ant"
+          payload_template: "{{ states('sensor.precioluz_20') }}"
+          retain: true
+      - service: mqtt.publish
+        data_template:
+          topic: "home/ree_mqtt/precioluz_21ant"
+          payload_template: "{{ states('sensor.precioluz_21') }}"
+          retain: true
+      - service: mqtt.publish
+        data_template:
+          topic: "home/ree_mqtt/precioluz_22ant"
+          payload_template: "{{ states('sensor.precioluz_22') }}"
+          retain: true
+      - service: mqtt.publish
+        data_template:
+          topic: "home/ree_mqtt/precioluz_23ant"
+          payload_template: "{{ states('sensor.precioluz_23') }}"
+          retain: true
+
+  - alias: JSON Tarifa Luz
+    initial_state: true
+    trigger:
+      - platform: time
+        at: "20:15:00"
+      - platform: time
+        at: "20:30:00"
+      - platform: time
+        at: "20:45:00"
+      - platform: time
+        at: "21:00:00"
+    action:
+      - service: homeassistant.update_entity
+        entity_id: sensor.precioluz_ree
+
+#  - alias: JSON Tarifa Luz Copia
+#    initial_state: true
+#    trigger:
+#      - platform: time
+#        at: "20:06:00"
+#    action:
+#      - service: homeassistant.update_entity
+#        entity_id: sensor.precioluz_20ant
+#      - service: homeassistant.update_entity
+#        entity_id: sensor.precioluz_21ant
+#      - service: homeassistant.update_entity
+#        entity_id: sensor.precioluz_22ant
+#      - service: homeassistant.update_entity
+#        entity_id: sensor.precioluz_23ant
+
+#  - alias: JSON Tarifa Luz
+#    initial_state: true
+#    trigger:
+#      - platform: time
+#        at: "20:15:00"
+#      - platform: time
+#        at: "20:30:00"
+#      - platform: time
+#        at: "20:45:00"
+#    condition:
+#      - platform: template
+#        value_template: "{{ now().day != sensor.precioluz_ree_fecha[:2] }}"
+#    action:
+#      - service: mqtt.publish
+#        data_template:
+#          topic: "home/ree_mqtt/precioluz_20ant"
+#          payload_template: "{{ states('sensor.precioluz_20') }}"
+#          retain: true
+#      - service: mqtt.publish
+#        data_template:
+#          topic: "home/ree_mqtt/precioluz_21ant"
+#          payload_template: "{{ states('sensor.precioluz_21') }}"
+#          retain: true
+#      - service: mqtt.publish
+#        data_template:
+#          topic: "home/ree_mqtt/precioluz_22ant"
+#          payload_template: "{{ states('sensor.precioluz_22') }}"
+#          retain: true
+#      - service: mqtt.publish
+#        data_template:
+#          topic: "home/ree_mqtt/precioluz_23ant"
+#          payload_template: "{{ states('sensor.precioluz_23') }}"
+#          retain: true
+#      - delay: '00:00:10'
+#      - service: homeassistant.update_entity
+#        entity_id: sensor.precioluz_ree
+
+
+#########################
+##  Personalizaciones  ##
+#########################
+homeassistant:
+  customize:
+    sensor.precioluz_20ant:
+      icon: mdi:currency-eur
+      friendly_name: 'Precio 20:00'
+    sensor.precioluz_21ant:
+      icon: mdi:currency-eur
+      friendly_name: 'Precio 21:00'
+    sensor.precioluz_22ant:
+      icon: mdi:currency-eur
+      friendly_name: 'Precio 22:00'
+    sensor.precioluz_23ant:
+      icon: mdi:currency-eur
+      friendly_name: 'Precio 23:00'
+    sensor.precioluz_00:
+      icon: mdi:currency-eur
+    sensor.precioluz_01:
+      icon: mdi:currency-eur
+    sensor.precioluz_02:
+      icon: mdi:currency-eur
+    sensor.precioluz_03:
+      icon: mdi:currency-eur
+    sensor.precioluz_04:
+      icon: mdi:currency-eur
+    sensor.precioluz_05:
+      icon: mdi:currency-eur
+    sensor.precioluz_06:
+      icon: mdi:currency-eur
+    sensor.precioluz_07:
+      icon: mdi:currency-eur
+    sensor.precioluz_08:
+      icon: mdi:currency-eur
+    sensor.precioluz_09:
+      icon: mdi:currency-eur
+    sensor.precioluz_10:
+      icon: mdi:currency-eur
+    sensor.precioluz_11:
+      icon: mdi:currency-eur
+    sensor.precioluz_12:
+      icon: mdi:currency-eur
+    sensor.precioluz_13:
+      icon: mdi:currency-eur
+    sensor.precioluz_14:
+      icon: mdi:currency-eur
+    sensor.precioluz_15:
+      icon: mdi:currency-eur
+    sensor.precioluz_16:
+      icon: mdi:currency-eur
+    sensor.precioluz_17:
+      icon: mdi:currency-eur
+    sensor.precioluz_18:
+      icon: mdi:currency-eur
+    sensor.precioluz_19:
+      icon: mdi:currency-eur
+    sensor.precioluz_20:
+      icon: mdi:currency-eur
+    sensor.precioluz_21:
+      icon: mdi:currency-eur
+    sensor.precioluz_22:
+      icon: mdi:currency-eur
+    sensor.precioluz_23:
+      icon: mdi:currency-eur

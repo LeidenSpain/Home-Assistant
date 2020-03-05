@@ -1,0 +1,158 @@
+####################
+##  Dispositivos  ##
+####################
+media_player:
+  - platform: emby
+    host: 192.168.3.10
+    port: 8096
+    api_key: !secret emby_key
+
+#  - platform: plex
+
+#  - platform: samsungtv_custom
+#    host: 192.168.3.105
+#    mac: BC:  # mac wifi
+#    name: Samsung Comedor
+#    sourcelist: '{"KEY_SOURCE": "KEY_SOURCE", "KEY_COMPONENT1": "KEY_COMPONENT1", "KEY_COMPONENT2": "KEY_COMPONENT2", "KEY_AV1": "KEY_AV1", "KEY_AV2": "KEY_AV2", "KEY_AV3": "KEY_AV3", "KEY_SVIDEO1": "KEY_SVIDEO1", "KEY_SVIDEO2": "KEY_SVIDEO2", "KEY_SVIDEO3": "KEY_SVIDEO3", "TVE1": "KEY_1", "TVE2": "KEY_2", "Ant3": "KEY_3", "Cuatro": "KEY_4", "Tele5": "KEY_5", "La Sexta": "KEY_6"}'
+#    protocol: ctl_beta
+#    sourcelist: '{"TV": "KEY_DTV", "Chromecast": "KEY_HDMI1", "MiniPC": "KEY_HDMI2", "TVE1": "KEY_1", "TVE2": "KEY_2", "Ant3": "KEY_3", "Cuatro": "KEY_4", "Tele5": "KEY_5", "La Sexta": "KEY_6"}'
+
+samsungtv:
+  - host: 192.168.3.105
+#    mac: BC:  # mac wifi
+
+alexa_media:
+  accounts:
+    - email: !secret jcc_mail
+      password: !secret alexa_psw
+      url: "amazon.es"
+
+notify:
+  - platform: alexa_media
+    name: alexa_media
+
+#  - platform: xiaomi_miio_gateway
+#    host: 192.168.3.201
+#    token: !secret xiaomi_aqara_token
+# ringtone_id 10013: alarma desactivada, bienvenido a casa
+# ringtone_id 10014: alarma activada en 15 segundos
+# ringtone_id 10015: alarma activada en 30 segundos
+# ringtone_id 10016: alarma activada en 60 segundos
+# ringtone_id 10017: atención, puerta abierta
+
+stream:
+
+#  - platform: androidtv
+#    name: MiBox Ania
+#    device_class: androidtv
+#    host: 192.168.3.209
+#    adb_server_port: 5555
+#    adb_server_ip: 192.168.3.10
+#    adb_server_port: 5037
+#    adbkey: '/home/homeassistant/.android/adbkey'
+#    apps:
+#      "youtube": "YouTube"
+#      "spotify": "Spotify"
+#      "emby": "Emby"
+
+#  - platform: androidtv
+#    host: 192.168.3.209
+#    name: MiBox Ania
+#    adb_server_ip: 192.168.3.10
+#    adb_server_port: 5555
+#    adbkey: '/home/home-server/.android/adbkey'
+#    apps:
+#      "youtube": "YouTube"
+#      "spotify": "Spotify"
+#      "emby": "Emby"
+
+## BROADLINK TV SAMSUNNG ##
+#  - platform: broadlink
+#    host: 192.168.3.202
+#    mac: '34:'
+#    ircodes_ini: 'devices/ir_tv_samsung.ini'
+#    ping_host: 192.168.3.104
+
+
+#####################
+##  Informaciones  ##
+#####################
+sensor:
+#  - platform: plex
+
+  - platform: systemmonitor
+    scan_interval: 60 
+    resources:
+      - type: process
+        arg: ffmpeg
+
+  - platform: command_line
+    name: ffmpeg cpu
+    command: top -b -n 1 | head -n 50 | grep -i ffmpeg | awk '{print $9}'
+    unit_of_measurement: "%"
+
+  - platform: template
+    sensors:
+      ffmpeg_cpu_template:
+        value_template: >-
+          {% if is_state('sensor.process_ffmpeg', 'off') %}
+            off
+          {% else %}
+            {{ states('sensor.ffmpeg_cpu') }} %
+          {% endif %}
+        unit_of_measurement: '%'
+
+
+
+###############
+##  Scripts  ##
+###############
+script:
+
+
+################
+##  Comandos  ##
+################
+shell_command:
+  adb: '/usr/bin/adb connect 192.168.3.209'
+
+
+########################
+##  Automatizaciones  ##
+########################
+automation:
+  - alias: 'A_ ADB start'
+    trigger:
+      - platform: state
+        entity_id: device_tracker.box_tv
+        to: 'home'
+    condition:
+      - condition: state
+        entity_id: media_player.mibox_ania
+        state: 'Unavailable'
+      - condition: state
+        entity_id: switch.ania_media
+        state: 'off'
+    action:
+      - service: shell_command.adb
+        data_template:
+          ip_adb: '192.168.9.12'
+
+
+#########################
+##  Personalizaciones  ##
+#########################
+homeassistant:
+  customize:
+    sensor.process_ffmpeg:
+      friendly_name: Activo
+      icon: mdi:video-vintage
+    sensor.ffmpeg_cpu:
+      friendly_name: Uso CPU
+      icon: mdi:memory
+    sensor.ffmpeg_cpu_template:
+      friendly_name: Uso CPU transcodificación
+      icon: mdi:memory
+    script.radio_online:
+      friendly_name: Reproducir
+      icon: mdi:play

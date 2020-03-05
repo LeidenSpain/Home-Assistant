@@ -1,0 +1,329 @@
+#####################
+##  Informaciones  ##
+#####################
+sensor:
+  - platform: template
+    sensors:
+      server_current_power:
+        entity_id: sensor.time
+        value_template: "{{ state_attr('switch.servidor_medidor', 'load_power') }}"
+        unit_of_measurement: W
+        icon_template: mdi:flash
+
+  - platform: template
+    sensors:
+      last_boot_templated:
+        entity_id: sensor.last_boot
+        icon_template: mdi:clock
+        value_template: "{{ as_timestamp(states('sensor.last_boot')) | timestamp_custom('%d/%m/%Y %H:%M') }}"
+
+  - platform: template
+    sensors:
+      server_uptime:
+        entity_id: sensor.time
+        icon_template: mdi:clock-start
+        value_template: >
+          {% set up_time = ((as_timestamp(now()) - as_timestamp(states('sensor.last_boot'))) / 60) | int %}
+          {% set minutes = (up_time % 60) | int %}
+          {% set hours = ((up_time % 1440) / 60) | int %}
+          {% set days = (up_time / 1440) | int %}
+          {{ days }}d {{ ' : ' }} {{ hours }}h {{ ' : ' }} {{ minutes }}m
+
+  - platform: cpuspeed
+
+  - platform: command_line
+    name: CPU Temperature
+    command: "cat /sys/class/thermal/thermal_zone0/temp"
+    unit_of_measurement: "°C"
+    value_template: '{{ value | multiply(0.001) | round(1) }}'
+    
+  - platform: systemmonitor
+    scan_interval: 60 
+    resources:
+      - type: last_boot
+      - type: processor_use
+      - type: memory_use_percent
+      - type: load_15m
+      - type: disk_use_percent
+        arg: /
+      - type: disk_free
+        arg: /
+      - type: disk_use_percent
+        arg: /mnt/Mis Documentos
+      - type: disk_free
+        arg: /mnt/Mis Documentos
+      - type: disk_use_percent
+        arg: /mnt/Server_Media
+      - type: disk_free
+        arg: /mnt/Server_Media
+      - type: process
+        arg: amule
+#      - type: process
+#        arg: firefox
+
+  - platform: hddtemp
+    disks:
+      - /dev/sda
+
+  - platform: command_line
+    name: amule cpu
+    command: "top -b -n 1 | head -n 50 | grep -i amule | awk '{print $9}'"
+    unit_of_measurement: "%"
+
+#  - platform: command_line
+#    name: firefox cpu
+#    command: "top -b -n 1 | grep -i firefox | awk '{print $9}'"
+#    unit_of_measurement: "%"
+      
+  - platform: template
+    sensors:
+      amule_cpu_template:
+        value_template: >-
+          {% if is_state('sensor.process_amule', 'off') %}
+            off
+          {% else %}
+            {{ states('sensor.amule_cpu') }}
+          {% endif %}
+        unit_of_measurement: '%'
+
+#  - platform: template
+#    sensors:
+#      firefox_cpu_template:
+#        value_template: >-
+#          {% if is_state('sensor.process_firefox', 'off') %}
+#            Desactivado
+#          {% else %}
+#            {{ states('sensor.firefox_cpu') }} %
+#          {% endif %}
+
+#  - platform: cert_expiry
+#    host: !secret url_ddns
+#    port: 8123
+#    scan_interval: 10800
+
+  - platform: template
+    sensors:
+      server_current_power_cost:
+        value_template: "{{ ((states('sensor.server_current_power')|float) * (states('sensor.actual_eur_kwh')|float) / 1000) | round(5) }}"
+        friendly_name: 'Coste Electricidad Actual'
+        icon_template: mdi:currency-eur
+        unit_of_measurement: '€/H'
+
+utility_meter:
+  server_cost_hourly:
+    source: sensor.server_current_power_cost
+    cycle: hourly
+  server_cost_daily:
+    source: sensor.server_current_power_cost
+    cycle: daily
+  server_cost_weekly:
+    source: sensor.server_current_power_cost
+    cycle: weekly
+  server_cost_monthly:
+    source: sensor.server_current_power_cost
+    cycle: monthly
+  server_cost_yearly:
+    source: sensor.server_current_power_cost
+    cycle: yearly
+
+switch:
+  - platform: template
+    switches:
+      amule:
+        value_template: "{{ is_state('sensor.process_amule', 'on') }}"
+        turn_on:
+          service: script.amule_on
+        turn_off:
+          service: script.amule_off
+#      firefox:
+#        value_template: "{{ is_state('sensor.process_firefox', 'on') }}"
+#        turn_on:
+#          service: script.firefox_on
+#        turn_off:
+#          service: script.firefox_off
+
+  - platform: command_line
+    switches:
+      service_amazondash:
+        command_state: 'systemctl is-active --quiet amazon-dash.service && echo on || echo off'
+        value_template: '{{ value == "on" }}'
+        command_on: 'sudo systemctl start amazon-dash.service'
+        command_off: 'sudo systemctl stop amazon-dash.service'
+      service_bluetooth:
+        command_state: 'systemctl is-active --quiet bluetooth.service && echo on || echo off'
+        value_template: '{{ value == "on" }}'
+        command_on: 'sudo systemctl start bluetooth.service'
+        command_off: 'sudo systemctl stop bluetooth.service'
+#      amule:
+#        command_on: 'ssh -X home-server@localhost amule'
+#        command_off: 'ssh home-server@localhost pkill amule'
+#      firefox1:
+#        command_on: 'ssh home-server@localhost firefox'
+#        command_off: 'ssh home-server@localhost pkill firefox'
+#        command_state: ps -A | grep firefox | awk '{print $4}'
+#        value_template: '{{ value == "firefox" }}'
+
+
+########################
+##  Automatizaciones  ##
+########################
+automation: 
+  - alias: 'Actualización Sensor Certificado'
+    initial_state: true
+    trigger:
+      - platform: homeassistant
+        event: start     
+    action:
+      - delay: '00:00:01'
+      - service: homeassistant.update_entity
+        entity_id:
+          - sensor.ssl_certificate_expiry
+
+#  - alias: 'Aviso certificado caduca'
+#    initial_state: true
+#    trigger:
+#      - platform: state
+#        entity_id: {{ states('sensor.ssl_certificate_expiry') | string }}
+#        from: 20
+#        to: 19
+#      - platform: state
+#        entity_id: sensor.ssl_certificate_expiry
+#        from: 15
+#        to: 14
+#    action:
+#      - service: notify.telegram_jcc
+#        data_template:
+#          message: "Certificado SSL caduca en {{ states('sensor.ssl_certificate_expiry') }} días"
+
+
+################
+##  Comandos  ##
+################
+shell_command:
+  amule_on: ssh -X home-server@localhost amuleX
+  amule_off: ssh home-server@localhost pkill amuleX
+#  firefox_on: ssh -X home-server@localhost firefox
+#  firefox_off: ssh home-server@localhost pkill firefox
+
+
+###############
+##  Scripts  ##
+###############
+script:
+  amule_on:
+    sequence:
+      - service: shell_command.amule_on
+      - delay: '00:00:10'
+      - service: homeassistant.update_entity
+        entity_id : sensor.process_amule
+  amule_off:
+    sequence:
+      - service: shell_command.amule_off
+      - delay: '00:00:10'
+      - service: homeassistant.update_entity
+        entity_id : sensor.process_amule
+#  firefox_on:
+#     sequence:
+#      - service: shell_command.firefox_on
+##      - delay: '00:00:05'
+#      - service: homeassistant.update_entity
+#        entity_id : sensor.process_firefox
+#      - service: homeassistant.update_entity
+#        entity_id : sensor.firefox_cpu
+#      - service: homeassistant.update_entity
+#        entity_id : sensor.firefox_cpu_template
+#  firefox_off:
+#    sequence:
+#      - service: shell_command.firefox_off
+##      - delay: '00:00:05'
+#      - service: homeassistant.update_entity
+#        entity_id : sensor.process_firefox
+#      - service: homeassistant.update_entity
+#        entity_id : sensor.firefox_cpu_template
+
+
+#########################
+##  Personalizaciones  ##
+#########################
+homeassistant:
+  customize:
+    sensor.server_current_power:
+      friendly_name: Consumo servidor
+    sensor.last_boot:
+      hidden: true
+    sensor.last_boot_templated:
+      friendly_name: Último reinicio
+    sensor.server_uptime:
+      friendly_name: Tiempo activo
+    sensor.processor_use:
+      friendly_name: CPU Uso
+    sensor.cpu_temperature:
+      friendly_name: CPU Temperatura
+    sensor.cpu_speed:
+      friendly_name: CPU Velocidad
+    sensor.load_15m:
+      friendly_name: Indice carga sistema (15m)
+    sensor.memory_use_percent:
+      friendly_name: RAM usada
+      icon: mdi:chip
+    sensor.disk_free:
+      friendly_name: HDD Sistema (espacio libre)
+      icon: mdi:harddisk
+    sensor.disk_use_percent:
+      friendly_name: HDD Sistema (uso)
+      icon: mdi:harddisk
+    sensor.disk_free_mnt_mis_documentos:
+      friendly_name: HDD Documentos (espacio libre)
+      icon: mdi:harddisk
+    sensor.disk_use_percent_mnt_mis_documentos:
+      friendly_name: HDD Documentos (uso)
+      icon: mdi:harddisk
+    sensor.hd_temperature_dev_sda:
+      friendly_name: HDD Documentos (temperatura)
+      icon: mdi:harddisk
+    sensor.disk_free_mnt_server_media:
+      friendly_name: HDD Media (espacio libre)
+      icon: mdi:harddisk
+    sensor.disk_use_percent_mnt_server_media:
+      friendly_name: HDD Media (uso)
+      icon: mdi:harddisk
+    sensor.process_amule:
+      friendly_name: Activo
+      icon: mdi:cloud-download
+    sensor.amule_cpu:
+      friendly_name: Uso CPU amule
+      icon: mdi:memory
+    sensor.amule_cpu_template:
+      friendly_name: Uso CPU amule
+      icon: mdi:memory
+#    sensor.firefox_cpu_template:
+#      friendly_name: Uso CPU firefox
+#      icon: mdi:memory
+    switch.service_amazondash:
+      friendly_name: Servicio AmazonDash
+      icon: mdi:amazon
+    switch.service_bluetooth:
+      friendly_name: Servicio Bluetooth
+      icon: mdi:bluetooth
+    sensor.ssl_certificate_expiry:
+      friendly_name: Caducidad SSL
+    sensor.server_cost_hourly:
+      friendly_name: Gasto acumulado (Hora)
+      icon: mdi:currency-eur
+      unit_of_measurement: '€'
+    sensor.server_cost_daily:
+      friendly_name: Gasto acumulado (Día)
+      icon: mdi:currency-eur
+      unit_of_measurement: '€'
+    sensor.server_cost_weekly:
+      friendly_name: Gasto acumulado (Semana)
+      icon: mdi:currency-eur
+      unit_of_measurement: '€'
+    sensor.server_cost_monthly:
+      friendly_name: Gasto acumulado (Mes)
+      icon: mdi:currency-eur
+      unit_of_measurement: '€'
+    sensor.server_cost_yearly:
+      friendly_name: Gasto acumulado (Año)
+      icon: mdi:currency-eur
+      unit_of_measurement: '€'

@@ -1,0 +1,87 @@
+## Sensores ##
+sensor:
+  - platform: scrape
+    resource: https://tarifaluzhora.es/
+    name: "Fecha"
+    select: "span:nth-of-type(11)" 
+  
+  - platform: scrape
+    resource: https://tarifaluzhora.es/
+    name: "Hora Recogida de Datos"
+    select: "h5:nth-of-type(1)"
+    value_template: '{{ value.split()[3] }}'
+
+  - platform: scrape
+    resource: https://tarifaluzhora.es/
+    name: "Actual (€/KWH)"
+    select: "span:nth-of-type(9)"
+    value_template: '{{ value.split()[0] }}'
+    unit_of_measurement: "kWH"
+
+  - platform: scrape
+    resource: https://tarifaluzhora.es/
+    name: "Minimo Diario (Hora)"
+    select: "span:nth-of-type(12)"
+
+  - platform: scrape
+    resource: https://tarifaluzhora.es/
+    name: "Minimo Diario (€/KWH)"
+    select: "span:nth-of-type(13)"
+    value_template: '{{ value.split()[0] }}'
+    unit_of_measurement: "kWH"
+  
+  - platform: scrape
+    resource: https://tarifaluzhora.es/
+    name: "Maximo Diario (Hora)"
+    select: "span:nth-of-type(14)"
+
+  - platform: scrape
+    resource: https://tarifaluzhora.es/
+    name: "Maximo Diario (€/KWH)"
+    select: "span:nth-of-type(15)"
+    value_template: '{{ value.split()[0] }}'
+    unit_of_measurement: "kWH"
+  
+  - platform: scrape
+    resource: https://tarifaluzhora.es/
+    name: "Precio Medio (€/kWH)"
+    select: "span:nth-of-type(10)"
+    value_template: '{{ value.split()[0] }}'
+    unit_of_measurement: "kWH"
+  
+    
+## Personalizacion ##
+homeassistant:
+  customize:
+    sensor.fecha:
+      icon: mdi:calendar-range
+    sensor.hora_recogida_de_datos:
+      icon: mdi:clock-outline
+    sensor.actual_eur_kwh:
+      icon: mdi:currency-eur
+    sensor.minimo_diario_hora:
+      icon: mdi:thumb-up
+    sensor.minimo_diario_eur_kwh:
+      icon: mdi:currency-eur
+    sensor.maximo_diario_hora:
+      icon: mdi:thumb-down
+    sensor.maximo_diario_eur_kwh:
+      icon: mdi:currency-eur
+    sensor.precio_medio_eur_kwh:
+      icon: mdi:currency-eur
+
+
+## Grupo ##
+group:
+  precioluz:
+    name: Precio Luz
+    control: hidden
+    entities:
+    - sensor.fecha
+    - sensor.hora_recogida_de_datos
+    - sensor.actual_eur_kwh
+    - sensor.minimo_diario_hora
+    - sensor.minimo_diario_eur_kwh
+    - sensor.maximo_diario_hora
+    - sensor.maximo_diario_eur_kwh
+    - sensor.precio_medio_eur_kwh

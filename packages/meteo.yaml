@@ -1,0 +1,308 @@
+################
+##  Sensores  ##
+################
+sensor:
+#  - platform: co2signal
+#    token:  !secret co2_token
+#    country_code: es
+#    latitude: !secret latitude
+#    longitude: !secret longitude
+
+  - platform: darksky
+    api_key: !secret darksky_api_key
+    language: es
+    name: Barcelona
+#    forecast:
+#      - 0
+#      - 1
+#      - 2
+#      - 3
+#      - 4
+#      - 5
+    monitored_conditions:
+      - icon
+      - summary
+#      - nearest_storm_distance
+#      - nearest_storm_bearing
+      - humidity
+      - temperature
+      - temperature_high
+      - temperature_low
+      - apparent_temperature
+      - apparent_temperature_high
+      - apparent_temperature_low
+      - wind_speed
+      - wind_bearing
+      - precip_type
+      - precip_probability
+      - precip_accumulation
+      - precip_intensity
+      - precip_intensity_max
+      - uv_index
+      - daily_summary
+      - pressure
+      - visibility
+    scan_interval:
+      minutes: 15
+    
+  - platform: template
+    sensors:
+      wind_dir:
+        friendly_name: 'Dirección del viento'
+        icon_template: mdi:compass
+        value_template: >-
+          {% set wind_dir = states('sensor.barcelona_wind_bearing') %}
+          {% if wind_dir | float<=11 %}Norte
+          {% elif wind_dir | float>348 %}Norte
+          {% elif 11 < (wind_dir|float) <=34 %}NNE
+          {% elif 34 < (wind_dir|float) <=56 %}Noreste
+          {% elif 56 < (wind_dir|float) <=79 %}ENE
+          {% elif 79 < (wind_dir|float) <=101 %}Este
+          {% elif 101 < (wind_dir|float) <=124 %}ESE
+          {% elif 124 < (wind_dir|float) <=146 %}Sureste
+          {% elif 146 < (wind_dir|float) <=169 %}SSE
+          {% elif 169 < (wind_dir|float) <=191 %}Sur
+          {% elif 191 < (wind_dir|float) <=214 %}SSO
+          {% elif 214 < (wind_dir|float) <=236 %}Suroeste
+          {% elif 236 < (wind_dir|float) <=259 %}OSO
+          {% elif 259 < (wind_dir|float) <=281 %}Oeste
+          {% elif 281 < (wind_dir|float) <=304 %}ONO
+          {% elif 304 < (wind_dir|float) <=326 %}Noroeste
+          {% elif 326 < (wind_dir|float) <=348 %}NNO
+          {%- endif %}
+
+#  - platform: template
+#    sensors:
+#      storm_dir:
+#        friendly_name: 'Dirección tormenta más cercana'
+#        icon_template: mdi:weather-lightning
+#        value_template: >-
+#          {% set storm_dir = states('sensor.barcelona_nearest_storm_bearing') %}
+#          {% if storm_dir=="unknown" %}Desconocido
+#          {% elif storm_dir | float<=11 %}Norte
+#          {% elif storm_dir | float>348 %}Norte
+#          {% elif 11 < (storm_dir|float) <=34 %}NNE
+#          {% elif 34 < (storm_dir|float) <=56 %}Noreste
+#          {% elif 56 < (storm_dir|float) <=79 %}}ENE
+#          {% elif 79 < (storm_dir|float) <=101 %}Este
+#          {% elif 101 < (storm_dir|float) <=124 %}ESE
+#          {% elif 124 < (storm_dir|float) <=146 %}Sureste
+#          {% elif 146 < (storm_dir|float) <=169 %}SSE
+#          {% elif 169 < (storm_dir|float) <=191 %}Sur
+#          {% elif 191 < (storm_dir|float) <=214 %}SSO
+#          {% elif 214 < (storm_dir|float) <=236 %}Suroeste
+#          {% elif 236 < (storm_dir|float) <=259 %}OSO
+#          {% elif 259 < (storm_dir|float) <=281 %}Oeste
+#          {% elif 281 < (storm_dir|float) <=304 %}ONO
+#          {% elif 304 < (storm_dir|float) <=326 %}Noroeste
+#          {% elif 326 < (storm_dir|float) <=348 %}NNO
+#          {%- endif %}
+
+#  - platform: template
+#    sensors: 
+#      tormenta:
+#        friendly_name: Tormenta
+#        value_template: >-
+#          {{ states('sensor.barcelona_nearest_storm_distance')|float < 9 and states('sensor.barcelona_precip_probability')|float > 80 }}
+
+  - platform: airvisual
+    api_key: !secret airvisual_api
+    monitored_conditions:
+      - us
+    show_on_map: false
+    latitude: !secret latitude
+    longitude: !secret longitude
+#    city: barcelona
+#    state: catalunya
+#    country: spain
+
+  - platform: meteoalarm_m
+    id: 'Barcelona_m'
+    name: alert
+    scan_interval: 3600
+
+binary_sensor:
+  - platform: meteoalarm
+    name: Barcelona
+    country: 'ES'
+    province: 'Barcelona'
+    language: 'es'
+#    scan_interval: 90
+
+weather:
+  - platform: darksky
+    api_key: !secret darksky_api_key
+    mode: daily
+
+  - platform: darksky_m
+    api_key: !secret darksky_api_key
+    units: si
+    mode: daily
+
+camera: 
+  - platform: generic
+    still_image_url: https://api.sat24.com/mostrecent/SP/rainTMC
+    name: Meteo Fijo
+    scan_interval:
+      minutes: 5
+  - platform: generic
+    still_image_url: https://api.sat24.com/animated/SP/rainTMC/1/Central%20European%20Standard%20Time/
+    name: Meteo Movil
+    scan_interval:
+      minutes: 5
+
+
+########################
+##  Automatizaciones  ##
+########################
+automation:
+  - alias: Aviso moho
+    initial_state: false
+    trigger:
+      - platform: numeric_state
+        entity_id:
+          - sensor.ania_moho
+          - sensor.banyo_moho
+          - sensor.cocina_moho
+          - sensor.comedor_moho
+          - sensor.despacho_moho
+          - sensor.dormitorio_moho
+          - sensor.invitados_moho
+        above: 70
+        for: '00:10:00'
+    action:
+      - service: notify.telegram_familia
+        data_template:
+          message: >
+            Posibilidad de *{{ trigger.to_state.attributes.friendly_name }}* el índice es de *{{ trigger.to_state.state }} %*. *Hay que ventilar*
+
+  - alias: Fuerte viento MSG
+#    initial_state: 'on'
+    trigger:
+      - platform: numeric_state
+        entity_id: sensor.barcelona_wind_speed
+        above: 11
+        for: '00:05:00'
+    condition:
+      - condition: state
+        entity_id: sensor.day_night
+        state: 'Día'
+    action:
+      - service: media_player.volume_set
+        data:
+          entity_id: media_player.alexa_comedor
+          volume_level: 0.5
+      - service: notify.alexa_media_comedor
+        data_template:
+          data:
+            type: announce
+            method: speak
+          message: "Aviso de rachas de viento de {{ (states('sensor.barcelona_wind_speed') | round(0) |  int * 3.6) | round(0) }} kilómetros hora. Controlar ventanas y balcón"
+      - service: notify.telegram_familia
+        data_template:
+          message: >
+            Aviso de rachas de viento de *{{ (states('sensor.barcelona_wind_speed') | round(0) |  int * 3.6) | round(0) }}Km/h*. Controlar ventanas y balcón
+
+#  - alias: weather_msg_storm
+#    trigger:
+#    - entity_id: binary_sensor.tormenta
+#      from: 'off'
+#      platform: state
+#      to: 'on'
+#    action:
+#    - data_template:
+#        message: La probabilidad de lluvia es de {{ states('sensor.barcelona_precip_probability') }}%.
+#          La tormenta esta a {{ states('sensor.barcelona_nearest_storm_distance') }} km de distancia.
+#        title: ATENCION TORMENTA
+#      service: notify.telegram_familia
+#    - data:
+#        caption: Radar lluvia
+#        url: https://api.sat24.com/mostrecent/SP/rainTMC
+#      service: telegram_bot.send_photo
+#    - data:
+#        caption: Radar lluvia historico
+#        url: https://api.sat24.com/animated/SP/rainTMC/1/W_dot_%20Europe%20Standard%20Time/
+#      service: telegram_bot.send_video
+
+  - alias: weather_alert
+#    initial_state: 'on'
+    trigger:
+      - platform: state
+        entity_id: sensor.alert
+    condition:
+      - condition: template
+        value_template: '{{trigger.from_state.state != trigger.to_state.state}}'
+    action:
+      - service: notify.telegram_jcc
+        data_template:
+          message: >
+            {%- if not is_state('sensor.alert', '0') -%}
+              {%- for s  in ['today', 'tomorrow'] -%}
+                {%- set v = state_attr('sensor.w_alert', s) -%}
+                {%- if v -%}
+                  {% for d  in v -%}
+                    {{s}} - {{d['code']}} {{d['event']}} {{d['end']}}
+                  {% endfor -%}
+                {%- endif -%}
+              {% endfor -%}
+            {% else %}
+              alert expired
+            {% endif %}
+
+
+##############
+##  Grupos  ##
+##############
+group:
+  sensores_moho:
+    name: Sensores Moho
+    icon: mdi:biohazard
+    entities:
+      - sensor.ania_moho
+      - sensor.banyo_moho
+      - sensor.cocina_moho
+      - sensor.comedor_moho
+      - sensor.despacho_moho
+      - sensor.dormitorio_moho
+      - sensor.invitados_moho
+
+
+#######################
+##  Personalizacion  ##
+#######################
+homeassistant:
+  customize:
+    sun.sun:
+      hidden: true
+    sensor.barcelona_summary:
+      friendly_name: Resumen
+#    sensor.barcelona_nearest_storm_bearing:
+#      hidden: true
+#    sensor.barcelona_nearest_storm_distance:
+#      friendly_name: "Distancia tormenta más cercana"
+    sensor.barcelona_humidity:
+      friendly_name: Humedad
+    sensor.barcelona_temperature:
+      friendly_name: Temperatura
+    sensor.barcelona_apparent_temperature:
+      friendly_name: Sensación térmica
+    sensor.barcelona_wind_speed:
+      friendly_name: Velocidad del viento
+    sensor.barcelona_wind_bearing:
+      hidden: true
+    sensor.barcelona_precip:
+      friendly_name: Precipitación
+    sensor.barcelona_precip_probability:
+      friendly_name: Probabilidad lluvia
+    sensor.barcelona_precip_intensity:
+      friendly_name: Intensidad lluvia
+    sensor.barcelona_uv_index:
+      friendly_name: Indice UV
+    sensor.barcelona_daily_summary:
+      friendly_name: Resumen diario
+    sensor.barcelona_pressure:
+      friendly_name: Presion
+    sensor.barcelona_visibility:
+      friendly_name: Visibilidad
+    automation.weather_msg_storm:
+      friendly_name: Tormenta cercana

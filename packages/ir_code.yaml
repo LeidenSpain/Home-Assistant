@@ -1,0 +1,30 @@
+﻿#####################
+##  Informaciones  ##
+#####################
+#switch:
+#  - platform: broadlink
+#    host: 192.168.3.202
+#    mac: '34:'
+#    timeout: 15
+#    switches:
+#TV - Samsung   
+#https://github.com/yahat/broadlink_mini_homeassistant_ir_codes_samsung_tv
+#      tv_samsung:
+#        friendly_name: "Samsung TV Power"
+#        command_on: 'JgBGAJKVETkRORA6ERQRFBEUERQRFBE5ETkQOhAVEBUQFREUEBUQOhEUERQRORE5EBURFBA6EBUQOhE5EBUQFRA6EDoRFBEADQUAAA=='
+#        command_off: 'JgBGAJOVEDoQOhA6DxYPFhAVEBUQFRA6ETkROREUERQRFBEUEBUQFREUERQRORE5EBUQFRE5ETkRORE5ERUQFRA6DzsPFhAADQUAAA=='
+#      input_hdmi_1:
+#        friendly_name: 'HDMI 1'
+#        command_on: 'JgBGAJOSEjcUMxUzFQ4UDhEREREUDxMzETcSNxMQEw4UDhEREhAUMxUOERERNxQPEzMRNxI3ExATMxUzEhEUMxIRExATDhQADQUAAA=='
+#      input_tv:
+#        friendly_name: 'TV Input'
+#        command_on: 'JgBGAJSQEDcRNxI0Ew8QEhESEhERDxM0ETYTNhEPEw8QEhIREg8TNBA3ERETNBM0EBIREhIREQ8TDxE2ExERDxM0EDcRNxIADQUAAA=='
+#      smart:
+#        friendly_name: 'Smart'
+#        command_on: 'JgBGAJGWDzsPOxA6EBUQFRAVEBUQFRA6ETkQOhAVEBUQFREUEBURORAVERQRORA6ETkROREUERQRORA6ERQQFRITEBUROREADQUAAA=='
+
+
+#Aire acondicionado - LG
+
+
+#Amplificador - Harman Kardom AVR-4000

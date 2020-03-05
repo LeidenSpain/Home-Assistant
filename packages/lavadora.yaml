@@ -1,0 +1,222 @@
+################
+##  Sensores  ##
+################
+sensor:
+  - platform: mqtt
+    name: "Lavadora: Watios"
+    icon: mdi:alpha-w-circle-outline
+    state_topic: "tele/lavadora/SENSOR"
+    value_template: "{{ value_json.ENERGY.Power }}"
+#    value_template: '{{ value_json.ENERGY["Power"] }}'
+    availability_topic: "tele/lavadora/LWT"
+    unit_of_measurement: "W"
+    payload_available: "Online"
+    payload_not_available: "Offline"
+
+  - platform: mqtt
+    name: "Lavadora: Amperios"
+    icon: mdi:alpha-a-circle-outline
+    state_topic: "tele/lavadora/SENSOR"
+    value_template: "{{ value_json.ENERGY.Current }}"
+#    value_template: '{{ value_json.ENERGY["Current"] }}'
+    unit_of_measurement: 'A'
+    payload_available: "Online"
+    payload_not_available: "Offline"
+
+  - platform: mqtt
+    name: "Lavadora: Voltios"
+    icon: mdi:alpha-v-circle-outline
+    state_topic: "tele/lavadora/SENSOR"
+    value_template: "{{ value_json.ENERGY.Voltage }}"
+#    value_template: '{{ value_json.ENERGY["Voltage"] }}'
+    availability_topic: "tele/lavadora/LWT"
+    unit_of_measurement: "V"
+    payload_available: "Online"
+    payload_not_available: "Offline"
+
+  - platform: mqtt
+    name: "Lavadora: Hoy"
+    icon: mdi:calendar-range
+    state_topic: "tele/lavadora/SENSOR"
+    value_template: "{{ value_json.ENERGY.Today }}"
+#    value_template: '{{ value_json.ENERGY["Today"] }}'
+    availability_topic: "tele/lavadora/LWT"
+    unit_of_measurement: "kWh"
+    payload_available: "Online"
+    payload_not_available: "Offline"
+
+  - platform: mqtt
+    name: "Lavadora: Ayer"
+    icon: mdi:calendar-range
+    state_topic: "tele/lavadora/SENSOR"
+    value_template: "{{ value_json.ENERGY.Yesterday }}"
+#    value_template: '{{ value_json.ENERGY["Yesterday"] }}'
+    availability_topic: "tele/lavadora/LWT"
+    unit_of_measurement: "kWh"
+    payload_available: "Online"
+    payload_not_available: "Offline"
+    
+  - platform: mqtt
+    name: "Lavadora: Total"
+    icon: mdi:calendar-range
+    state_topic: "tele/lavadora/SENSOR"
+    value_template: "{{ value_json.ENERGY.Total }}"
+#    value_template: '{{ value_json.ENERGY["Total"] }}'
+    availability_topic: "tele/lavadora/LWT"
+    unit_of_measurement: "kWh"
+    payload_available: "Online"
+    payload_not_available: "Offline"
+
+#  - platform: mqtt
+#    name: "Lavadora: P Aparente"
+#    icon: mdi:file-powerpoint-box-outline
+#    state_topic: "tele/lavadora/SENSOR"
+#    value_template: '{{ value_json.ENERGY["ApparentPower"] }}'
+#    unit_of_measurement: 'VA'
+
+#  - platform: mqtt
+#    name: "Lavadora: P Reactiva"
+#    icon: mdi:file-powerpoint-box-outline
+#    state_topic: "tele/lavadora/SENSOR"
+#    value_template: '{{ value_json.ENERGY["ReactivePower"] }}'
+#    unit_of_measurement: 'VAr'
+    
+#  - platform: mqtt
+#    name: "Lavadora: Señal Wifi"
+#    icon: mdi:wifi
+#    state_topic: "tele/lavadora/STATE"
+#    value_template: "{{ value_json.Wifi.RSSI }}"
+#    availability_topic: "tele/lavadora/LWT"
+#    unit_of_measurement: "%"
+#    payload_available: "Online"
+#    payload_not_available: "Offline"
+
+#  - platform: mqtt
+#    name: "Lavadora: Estado"
+#    state_topic: "tele/lavadora/STATE"
+#    value_template: '{{ value_json["POWER"] }}'
+
+  - platform: template
+    sensors:
+      lavadora_current_power_cost:
+        value_template: "{{ ((states('sensor.lavadora_watios')|float) * (states('sensor.actual_eur_kwh')|float) / 1000) | round(5) }}"
+        friendly_name: 'Coste Electricidad Actual'
+        icon_template: mdi:currency-eur
+        unit_of_measurement: '€/H'
+
+binary_sensor:
+  - platform: template
+    sensors:
+      lavadora:
+        friendly_name: Lavadora
+        icon_template: mdi:washing-machine
+        delay_off:
+          minutes: 1
+        value_template: "{{ states('sensor.lavadora_watios')|float > 3.0 }}"
+
+switch:
+  - platform: mqtt
+    name: "Lavadora"
+    icon: mdi:washing-machine
+    state_topic: "stat/lavadora/POWER"
+    command_topic: "cmnd/lavadora/POWER"
+    availability_topic: "tele/lavadora/LWT"
+    payload_on: "ON"
+    payload_off: "OFF"
+    payload_available: "Online"
+    payload_not_available: "Offline"
+    retain: false
+
+#  - platform: mqtt
+#    name: "Lavadora 2"
+#    state_topic: "stat/lavadora/POWER"
+#    command_topic: "cmnd/lavadora/POWER"
+#    availability_topic: "tele/lavadora/LWT"
+#    value_template: '{{ value_json["POWER"] }}'
+#    qos: 2
+#    payload_on: "ON"
+#    payload_off: "OFF"
+#    payload_available: "Online"
+#    payload_not_available: "Offline"
+#    retain: false
+
+utility_meter:
+  lavadora_cost_hourly:
+    source: sensor.lavadora_current_power_cost
+    cycle: hourly
+  lavadora_cost_daily:
+    source: sensor.lavadora_current_power_cost
+    cycle: daily
+  lavadora_cost_weekly:
+    source: sensor.lavadora_current_power_cost
+    cycle: weekly
+  lavadora_cost_monthly:
+    source: sensor.lavadora_current_power_cost
+    cycle: monthly
+  lavadora_cost_yearly:
+    source: sensor.current_power_cost_server
+    cycle: yearly
+
+
+###############
+##  Scripts  ##
+###############
+script:
+     
+ 
+########################
+##  Automatizaciones  ##
+########################
+automation:
+  - alias: Lavadora Terminada
+    initial_state: 'on'
+    trigger:
+      - platform: state
+        entity_id: binary_sensor.lavadora
+        from: 'on'
+        to: 'off'
+        for: '00:05:00'
+    condition:
+      - condition: state   
+        entity_id: switch.lavadora
+        state: 'on'
+    action:
+      - service: media_player.volume_set
+        data:
+          entity_id: media_player.alexa_comedor
+          volume_level: 0.5
+      - service: notify.alexa_media_comedor
+        data:
+          data:
+            type: announce
+            method: speak
+          message: "Lavadora terminada"
+
+
+#########################
+##  Personalizaciones  ##
+#########################
+homeassistant:
+  customize:
+    sensor.lavadora_cost_hourly:
+      friendly_name: Gasto acumulado (Hora)
+      icon: mdi:currency-eur
+      unit_of_measurement: '€'
+    sensor.lavadora_cost_daily:
+      friendly_name: Gasto acumulado (Día)
+      icon: mdi:currency-eur
+      unit_of_measurement: '€'
+    sensor.lavadora_cost_weekly:
+      friendly_name: Gasto acumulado (Semana)
+      icon: mdi:currency-eur
+      unit_of_measurement: '€'
+    sensor.lavadora_cost_monthly:
+      friendly_name: Gasto acumulado (Mes)
+      icon: mdi:currency-eur
+      unit_of_measurement: '€'
+    sensor.lavadora_cost_yearly:
+      friendly_name: Gasto acumulado (Año)
+      icon: mdi:currency-eur
+      unit_of_measurement: '€'
+    automation.lavadora_terminada:
+      icon: mdi:washing-machine-alert

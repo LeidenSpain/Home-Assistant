@@ -1,0 +1,162 @@
+################
+##  Sensores  ##
+################
+device_tracker:
+  - platform: bluetooth_le_tracker
+#    track_new_devices: false
+    interval_seconds: 60
+    consider_home: 240
+    blacklist_names:
+      - 'dtvbluetooth'
+      - 'tv_samsung_led46'
+      - 'ulefone_s7'
+      - 'mibox_ania'
+      - 'ble_3c_'
+      - 'ble_68_'
+      - 'ble_58_'
+      - 'mibcs'
+#    hci_device: 'hci0'
+#    hide_unnamed: true
+
+#  - platform: bluetooth_le_tracker
+#    interval_seconds: 60
+#    new_device_defaults:
+#      track_new_devices: true
+
+#  - platform: bluetooth_tracker
+#    interval_seconds: 60
+#    new_device_defaults:
+#      track_new_devices: true
+      
+zone:
+  - name: Home
+    latitude: xxxx
+    longitude: yyy
+    radius: 20
+    icon: mdi:home
+
+  - name: Trabajo
+    latitude: aaa
+    longitude: bbbb
+    radius: 20
+    icon: mdi:worker
+ 
+  - name: Colegio
+    latitude: 1111
+    longitude: 222
+    radius: 20
+    icon: mdi:school
+
+input_select:
+  origin:
+    name: origen
+    icon: mdi:arrow-expand-right
+    options:
+      - Casa
+      - Trabajo
+      - Colegio
+  destination:
+    name: destino
+    icon: mdi:arrow-collapse-right
+    options:
+      - Casa
+      - Trabajo
+      - Colegio
+      
+sensor:
+  - platform: template
+    sensors:
+       orig_address:
+         value_template: >
+            {%- if is_state("input_select.origin", "Casa")  -%}
+              Carrer , nn, 08020 Barcelona, Spain
+            {%- elif is_state("input_select.origin", "Trabajo")  -%}
+              Plaza , , 08005 Barcelona, Spain
+            {%- elif is_state("input_select.origin", "Colegio")  -%}
+              Rambla , , 08018 Barcelona, Spain
+            {%- else -%}
+              unknown
+            {%- endif %}
+  - platform: template
+    sensors:
+       dest_address:
+         value_template: >-
+            {%- if is_state("input_select.destination", "Casa")  -%}
+              Carrer , nn, 08020 Barcelona, Spain
+            {%- elif is_state("input_select.destination", "Trabajo")  -%}
+              Plaza , , 08005 Barcelona, Spain
+            {%- elif is_state("input_select.destination", "Colegio")  -%}
+              Rambla , , 08018 Barcelona, Spain
+            {%- else -%}
+              unknown
+            {%- endif %}
+
+  - platform: waze_travel_time
+    name: "Trayecto"
+    origin: sensor.orig_address
+    destination: sensor.dest_address
+    region: 'EU'
+
+  - platform: waze_travel_time
+    name: "Trayecto Colegio"
+    origin: !secret dir_casa
+    destination: !secret dir_colegio
+    region: 'EU'
+
+
+########################
+##  Automatizaciones  ##
+########################
+automation:
+  - alias: aviso_trafico_colegio
+    trigger:
+      - platform: time
+        at: 08:20:00
+      - platform: time
+        at: 08:30:00
+      - platform: time
+        at: 08:40:00
+    condition:
+      condition: and
+      conditions:
+        - condition: state
+          entity_id: 'binary_sensor.workday_sensor'
+          state: 'on'
+        - condition: template
+          value_template: "{{ not is_state('alarm_control_panel.house', 'armed_away') }}"
+        - condition: or
+          conditions:
+            - condition: numeric_state
+              entity_id: sensor.trayecto_colegio
+              below: 8
+            - condition: state
+              entity_id: sensor.barcelona_precip
+              state: 'rain'
+    action:
+      - service: media_player.volume_set
+        data:
+          entity_id: media_player.alexa_comedor
+          volume_level: 0.5
+      - service: notify.alexa_media_en_toda_la_casa
+        data_template:
+          data:
+            type: announce
+            method: speak
+          message: "Son las {{ states('sensor.time') }}. El tráfico al colegio hoy es de  ({{ states('sensor.trayecto_colegio') | int + 1 }} minutos). El mejor camino es {{ state_attr('sensor.trayecto_colegio', 'route') }}. {% if is_state('sensor.barcelona_precip', 'rain') %}Ten en cuenta que hay previsión de lluvia, asi que mejor ir con tiempo{% endif %}"
+
+
+#######################
+##  Personalizacion  ##
+#######################
+homeassistant:
+  customize:
+    automation.aviso_trafico_colegio:
+      friendly_name: Aviso atasco al colegio
+      icon: mdi:car-multiple
+# https://www.home-assistant.io/components/device_tracker.bluetooth_le_tracker/
+# https://community.home-assistant.io/t/solved-error-setting-up-platform-bluetooth-le-tracker/83187
+# https://github.com/home-assistant/home-assistant/issues/16698
+# https://community.home-assistant.io/t/ble-custom-component/48355/13
+
+# home-server@home-server:~$ hcitool lescan
+# LE Scan ...
