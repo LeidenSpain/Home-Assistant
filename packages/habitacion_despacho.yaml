@@ -1,0 +1,83 @@
+################
+##  Sensores  ##
+################
+sensor:
+  - platform: template
+    sensors:
+      windchill_despacho:
+        value_template: "{{ (states('sensor.despacho_temperatura')|float + 0.348*(((states('sensor.despacho_humedad')|float/100)*6.105)*(2.71828**((17.27*states('sensor.despacho_temperatura')|float)/(237.7+states('sensor.despacho_temperatura')|float)))) - 4.25) | round(2) }}"
+        friendly_name: Despacho - Sensación térmica
+        icon_template: mdi:thermometer-lines
+        device_class: temperature   
+        unit_of_measurement: '°C'
+
+  - platform: mold_indicator
+    name: Despacho Moho
+    indoor_temp_sensor: sensor.despacho_temperatura
+    indoor_humidity_sensor: sensor.despacho_humedad
+    outdoor_temp_sensor: sensor.barcelona_temperature
+    calibration_factor: 2.0
+#calibration_factor = (temp_indoor - temp_outdoor) / (temp_criticalpoint - temp_outdoor)
+
+input_datetime:
+  miboxania_on:
+    name: Hora encendido
+    has_date: false
+    has_time: true
+
+  miboxania_off:
+    name: Hora apagado
+    has_date: false
+    has_time: true
+
+switch:
+  - platform: mqtt
+    name: "Ania Media"
+    icon: mdi:television
+    state_topic: "stat/ania_media/POWER"
+    command_topic: "cmnd/ania_media/POWER"
+    availability_topic: "tele/ania_media/LWT"
+    payload_on: "ON"
+    payload_off: "OFF"
+    payload_available: "Online"
+    payload_not_available: "Offline"
+    retain: false
+
+
+########################
+##  Automatizaciones  ##
+########################
+automation:
+  - alias: miboxania_on
+    trigger:
+      - platform: template
+        value_template: "{{ states('sensor.time') == state_attr('input_datetime.miboxania_on', 'timestamp') | int | timestamp_custom('%H:%M', False) }}"
+
+    action:
+      - service: switch.turn_on
+        entity_id: switch.ania_media
+
+  - alias: miboxania_off
+    trigger:
+      - platform: template
+        value_template: "{{ states('sensor.time') == state_attr('input_datetime.miboxania_off', 'timestamp') | int | timestamp_custom('%H:%M', False) }}"
+    action:
+      - service: switch.turn_off
+        entity_id: switch.ania_media
+
+
+#######################
+##  Personalizacion  ##
+#######################
+homeassistant:
+  customize:
+    switch.ania_media:
+      icon: mdi:youtube-tv
+    automation.miboxania_on:
+      friendly_name: Encendido programado
+      icon: mdi:calendar-clock
+    automation.miboxania_off:
+      friendly_name: Apagado programado
+      icon: mdi:calendar-clock
+    sensor.despacho_moho:
+      icon: mdi:biohazard

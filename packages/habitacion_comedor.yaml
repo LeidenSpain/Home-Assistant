@@ -1,0 +1,380 @@
+####################
+##  Dispositivos  ##
+####################
+switch:
+  - platform: broadlink
+    host: 192.168.3.202
+    mac: !secret broadlink_comedor_mac
+
+camera:
+  - platform: ffmpeg
+    name: Comedor
+    input: -rtsp_transport tcp -err_detect ignore_err -i rtsp://192.168.3.206/ch0_0.h264
+#    input: -an -i rtsp://192.168.3.206/ch0_0.h264
+#    extra_arguments: -vf select = "eq (pict_type \, I)"
+
+
+################
+##  Sensores  ##
+################
+sensor:
+  - platform: template
+    sensors:
+      windchill_comedor:
+        value_template: "{{ (states('sensor.comedor_temperatura')|float + 0.348*(((states('sensor.comedor_humedad')|float/100)*6.105)*(2.71828**((17.27*states('sensor.comedor_temperatura')|float)/(237.7+states('sensor.comedor_temperatura')|float)))) - 4.25) | round(2) }}"
+        friendly_name: Comedor - Sensación térmica
+        icon_template: mdi:thermometer-lines
+        device_class: temperature   
+        unit_of_measurement: '°C'
+
+  - platform: mold_indicator
+    name: Comedor Moho
+    indoor_temp_sensor: sensor.comedor_temperatura
+    indoor_humidity_sensor: sensor.comedor_humedad
+    outdoor_temp_sensor: sensor.barcelona_temperature
+    calibration_factor: 2.0
+#calibration_factor = (temp_indoor - temp_outdoor) / (temp_criticalpoint - temp_outdoor)
+
+  - platform: mqtt
+    name: comedor_mesa
+    state_topic: "home/light/comedor_mesa"
+
+cover:
+  - platform: mqtt
+    name: Puerta
+    state_topic: "shellies/shellyswitch25-68F2B6/roller/0"
+    command_topic: "shellies/shellyswitch25-68F2B6/roller/0/command"
+    position_topic: "shellies/shellyswitch25-68F2B6/roller/0/pos"
+    set_position_topic: "shellies/shellyswitch25-68F2B6/roller/0/command/pos"
+    #availability_topic: "shellies/shellyswitch25-68F2B6/online"
+    payload_available: "true"
+    payload_not_available: "false"
+    qos: 1
+    retain: false
+    payload_open: "open"
+    payload_close: "close"
+    payload_stop: "stop"
+    position_open: 100
+    position_closed: 0
+    optimistic: false
+
+  - platform: mqtt
+    name: Ventana
+    state_topic: "shellies/shellyswitch25-690B92/roller/0"
+    command_topic: "shellies/shellyswitch25-690B92/roller/0/command"
+    position_topic: "shellies/shellyswitch25-690B92/roller/0/pos"
+    set_position_topic: "shellies/shellyswitch25-690B92/roller/0/command/pos"
+    #availability_topic: "shellies/shellyswitch25-690B92/online"
+    payload_available: "true"
+    payload_not_available: "false"
+    qos: 1
+    retain: false
+    payload_open: "open"
+    payload_close: "close"
+    payload_stop: "stop"
+    position_open: 100
+    position_closed: 0
+    optimistic: false
+
+  - platform: group
+    name: Persianas
+    entities:
+      - cover.puerta
+      - cover.ventana
+
+light:
+  - platform: mqtt
+    name: "Comedor Mesa Pasillo"
+    state_topic: "stat/luz_mesa_pasillo/POWER"
+    command_topic: "cmnd/luz_mesa_pasillo/POWER"
+    availability_topic: "tele/luz_mesa_pasillo/LWT"
+    brightness_state_topic: "stat/luz_mesa_pasillo/RESULT"
+    brightness_command_topic: "cmnd/luz_mesa_pasillo/Dimmer"
+    brightness_scale: 100
+    brightness_value_template: "{{ value_json.Dimmer }}"
+    qos: 1
+    payload_on: "ON"
+    payload_off: "OFF"
+    payload_available: "Online"
+    payload_not_available: "Offline"
+    retain: false
+
+  - platform: group
+    name: Comedor Mesa
+    entities:
+      - light.comedor_mesa_entrada
+      - light.comedor_mesa_pasillo
+
+#    state_topic: "tele/light1/STATE"
+#    command_topic: "cmnd/light1/POWER"
+#    state_value_template: "{{value_json.POWER}}"
+#    availability_topic: "tele/light1/LWT"
+#    brightness_command_topic: "cmnd/light1/Dimmer"
+#    brightness_state_topic: "tele/light1/STATE"
+#    brightness_scale: 100
+#    on_command_type: "brightness"
+#    brightness_value_template: "{{value_json.Dimmer}}"
+
+#    state_topic: "stat/TuyaDimTest/POWER"
+#    command_topic: "cmnd/TuyaDimTest/POWER"
+#    availability_topic: "tele/TuyaDimTest/LWT"
+#    brightness_state_topic: "stat/TuyaDimTest/RESULT"
+#    brightness_command_topic: "cmnd/TuyaDimTest/Dimmer"
+#    brightness_scale: 100
+#    brightness_value_template: >
+#      {% if value_json.Dimmer is defined %}
+#        {{ value_json.Dimmer }}
+#      {% else %}
+#        {% if state_attr('light.tuyadimtest','brightness') == none %}
+#          0
+#        {% else %}
+#          {{ state_attr('light.tuyadimtest','brightness') / 255 * 100 }}
+#        {% endif %}
+#      {% endif %}
+
+
+###############
+##  Scripts  ##
+###############
+script:
+  tv_comedor_10min_off:
+    sequence:
+      - service: media_player.volume_set
+        data:
+          entity_id: media_player.alexa_comedor
+          volume_level: 0.1
+      - service: notify.alexa_media
+        data_template:
+          target:
+            - media_player.alexa_comedor
+          data:
+            type: tts
+          message: >
+            {% if is_state('media_player.samsung_46f7000', 'off') %}
+              La televisión ya se encuentra apagada
+            {% else %}
+              La televisión se apagará en 10 minutos
+            {% endif %}
+      - condition: state
+        entity_id: binary_sensor.tv_comedor
+        state: 'on'
+      - delay: '00:10:00'
+      - service: media_player.turn_off
+        data:
+          entity_id: media_player.tv_comedor
+
+  tv_comedor_20min_off:
+    sequence:
+      - service: media_player.volume_set
+        data:
+          entity_id: media_player.alexa_comedor
+          volume_level: 0.1
+      - service: notify.alexa_media
+        data_template:
+          target:
+            - media_player.alexa_comedor
+          data:
+            type: tts
+          message: >
+            {% if is_state('media_player.samsung_46f7000', 'off') %}
+              La televisión ya se encuentra apagada
+            {% else %}
+              La televisión se apagará en 20 minutos
+            {% endif %}
+      - condition: state
+        entity_id: binary_sensor.tv_comedor
+        state: 'on'
+      - delay: '00:20:00'
+      - service: media_player.turn_off
+        data:
+          entity_id: media_player.tv_comedor
+
+  tv_dormitorio_30min_off:
+    sequence:
+      - service: media_player.volume_set
+        data:
+          entity_id: media_player.alexa_comedor
+          volume_level: 0.1
+      - service: notify.alexa_media
+        data_template:
+          target:
+            - media_player.alexa_comedor
+          data:
+            type: tts
+          message: >
+            {% if is_state('media_player.samsung_46f7000', 'off') %}
+              La televisión ya se encuentra apagada
+            {% else %}
+              La televisión se apagará en 30 minutos
+            {% endif %}
+      - condition: state
+        entity_id: binary_sensor.tv_comedor
+        state: 'on'
+      - delay: '00:30:00'
+      - service: media_player.turn_off
+        data:
+          entity_id: media_player.tv_comedor
+
+#  comedor_luz_mesa:
+#    sequence:
+#      - service: automation.turn_off
+#        entity_id: automation.comedor_luz_mesa
+#      - service: light.turn_on 
+#        entity_id: light.comedor_mesa_distribuidor
+##        data_template:
+##          brightness: '50'
+##          brightness: "{{ state_attr('light.comedor_mesa_entrada', 'brightness') }}"
+#      - service: automation.turn_on
+#        entity_id: automation.comedor_luz_mesa
+
+
+########################
+##  Automatizaciones  ##
+########################
+automation:
+  - alias: comedor_luzpaso
+    initial_state: true
+    trigger:
+      - platform: state
+        entity_id: binary_sensor.comedor_movimiento
+    condition:
+      condition: and
+      conditions:
+        - condition: time
+          after: '23:00:00'
+          before: '08:00:00'
+        - condition: numeric_state
+          entity_id: sensor.comedor_iluminacion
+          below: '35'
+        - condition: template
+          value_template: "{{ states('media_player.samsung_46f7000') != 'on' }}"
+        - condition: state
+          entity_id: binary_sensor.comedor_aire_acondicionado
+          state: 'off'
+    action:
+      - service: light.turn_on 
+        data:
+          entity_id: light.gateway_luz
+          color_name: blue
+          brightness_pct: 15
+      - delay: '00:01:00'
+      - service: light.turn_off
+        entity_id: light.gateway_luz
+
+  - alias: comedor_luz_auto
+    initial_state: 'on'
+    trigger:
+      - platform: state
+        entity_id: 'binary_sensor.entrada_puerta'
+        to: 'on'
+    condition:
+      - condition: numeric_state
+        entity_id: 'sensor.comedor_iluminacion'
+        below: 100
+      - condition: state
+        entity_id: 'binary_sensor.cocina_movimiento'
+        state: 'off'
+        for:
+          minutes: 1
+      - condition: state
+        entity_id: 'binary_sensor.comedor_movimiento'
+        state: 'off'
+        for:
+          minutes: 1
+    action:
+      - service: light.turn_on
+        data:
+          entity_id: light.comedor_mesa
+          brightness: 80
+
+  - alias: comedor_luz_mesa
+    initial_state: true
+    trigger:
+      - platform: state
+        entity_id: light.comedor_mesa_entrada
+      - platform: state
+        entity_id: light.comedor_mesa_pasillo
+    action:
+      - service_template: >
+          {% if trigger.to_state.state == 'off' %}
+            light.turn_off
+          {% else %}
+            light.turn_on
+          {% endif %}
+        entity_id: light.comedor_mesa
+      - delay: '00:00:01'
+#      - wait_template: "{{ is_state('light.comedor_mesa', 'trigger.to_state.state') }}"
+
+  - alias: comedor_luz_mesa_test
+    initial_state: false
+    trigger:
+#      - platform: state
+#        entity_id: light.comedor_mesa_entrada
+#      - platform: state
+#        entity_id: light.comedor_mesa_pasillo
+      - platform: template
+        value_template: "{{ state_attr('light.comedor_mesa_entrada', 'brightness') != states('sensor.comedor_mesa') }}"
+      - platform: template
+        value_template: "{{ states_attr('light.comedor_mesa_pasillo', 'brightness') != states('sensor.comedor_mesa') }}"
+#    condition:
+#      condition: template
+#      value_template: {{ trigger.to_state.attributes.brightness != trigger.from_state.attributes.brightness }}
+    action:
+      - service: notify.telegram_jcc
+        data_template: 
+          message: "
+          *from_state.name: {{ trigger.from_state.name }}*
+
+          *to_state.name: {{ trigger.to_state.name }}*
+
+          *from_state.state: {{ trigger.from_state.state }}*
+
+          *to_state.state: {{ trigger.to_state.state }}*
+
+          *from_state.brightness: {{ trigger.from_state.brightness }}*
+
+          *to_state.brightness: {{ trigger.to_state.brightness }}*
+      
+          *light.comedor_mesa_entrada: {{ trigger.from_state.brightness }}*
+
+          *to_state.brightness: {{ trigger.to_state.brightness }}*
+
+          *entity_id.friendly_name: {{trigger.entity_id.friendly_name}}*"
+      - service: light.turn_on 
+        data_template:
+          entity_id: light.comedor_mesa
+          brightness: >
+            {% if state_attr('light.comedor_mesa_entrada', 'brightness') != states('sensor.comedor_mesa') %}
+              {{ state_attr('light.comedor_mesa_entrada', 'brightness') }}
+            {% else %}
+              {{ state_attr('light.comedor_mesa_pasillo', 'brightness') }}
+            {% endif %}
+      - delay: '00:00:01'
+      - service: mqtt.publish
+        data_template:
+          topic: "home/light/comedor_mesa"
+          payload_template: "{{ state_attr('light.comedor_mesa', 'brightness') }}"
+          retain: true
+#      - wait_template: "{{ state_attr('light.comedor_mesa_entrada', 'brightness') == state_attr('light.comedor_mesa_pasillo', 'brightness') }}"
+
+
+#######################
+##  Personalizacion  ##
+#######################
+homeassistant:
+  customize:
+    binary_sensor.comedor_ventana_izq:
+      device_class: window
+    binary_sensor.comedor_ventana_der:
+      device_class: window
+    sensor.comedor_iluminacion:
+      unit_of_measurement: lx
+    sensor.comedor_presion:
+      unit_of_measurement: mbar
+    switch.servidor_medidor:
+      hidden: true
+    automation.comedor_luzpaso:
+      friendly_name: Luz de paso
+      icon: mdi:coach-lamp
+    sensor.comedor_moho:
+      icon: mdi:biohazard

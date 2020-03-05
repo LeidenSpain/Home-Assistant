@@ -1,0 +1,124 @@
+################
+##  Sensores  ##
+################
+
+
+########################
+##  Automatizaciones  ##
+########################
+automation:
+  - alias: entrada_puerta_abierta
+    trigger:
+      - platform: state
+        entity_id: binary_sensor.entrada_puerta
+        from: 'off'
+        to: 'on'
+        for: '00:01:00'
+    action:
+      - service: xiaomi_aqara.play_ringtone
+        data:
+          gw_mac: !secret xiaomi_aqara_mac
+          ringtone_id: 10017
+          ringtone_vol: 50
+      - delay: '00:01:00'
+      - condition: state
+        entity_id: binary_sensor.entrada_puerta
+        state: 'on'
+      - service: xiaomi_aqara.play_ringtone
+        data:
+          gw_mac: !secret xiaomi_aqara_mac
+          ringtone_id: 10017
+          ringtone_vol: 50
+      - delay: '00:01:00'
+      - condition: state
+        entity_id: binary_sensor.entrada_puerta
+        state: 'on'
+      - service: xiaomi_aqara.play_ringtone
+        data:
+          gw_mac: !secret xiaomi_aqara_mac
+          ringtone_id: 10017
+          ringtone_vol: 50
+
+  - alias: pulsador_dobleclick
+    initial_state: 'on'
+    trigger:
+      platform: event
+      event_type: xiaomi_aqara.click
+      event_data:
+        entity_id: binary_sensor.entrada_pulsador
+        click_type: double
+    action:
+      - service: script.alarma_on
+
+#alert:
+#  puerta:
+#    name: Puerta Abierta
+#    entity_id: binary_sensor.entrada_puerta
+#    state: 'on'
+#    repeat:
+#      - 1
+#    notifiers:
+#      - alexa_comedor
+
+#notify:
+#  - name: alexa_comedor
+#    platform: group
+#    services:
+#      - service: html5
+#        data:
+#          target: "macbook"
+
+
+#######################
+##  Personalizacion  ##
+#######################
+homeassistant:
+  customize:
+    automation.entrada_puerta_abierta:
+      friendly_name: Aviso puerta abierta
+      icon: mdi:garage-alert
+
+
+
+
+
+# las autos son con un pulsador xiami ( el redondito) un click apago y enciendo la lampara, si aguanto bajo la intensidad al 50% y docble click la subo al 100 . Es para la lampara que tengo aqui al lado del pc
+#- alias: Luz Despacho
+#  initial_state: 'on'
+#  trigger:    
+#    platform: event
+#    event_type: xiaomi_aqara.click
+#    event_data:
+#      entity_id: binary_sensor.switch_158d0001f9f509
+#      click_type: single
+#  action:
+#    - service: homeassistant.toggle
+#      entity_id: light.luz_despacho
+
+#- alias: Luz Despacho 50
+#  initial_state: 'on'
+#  trigger:
+#    platform: event
+#    event_type: xiaomi_aqara.click
+#    event_data:
+#      entity_id: binary_sensor.switch_158d0001f9f509
+#      click_type: long_click_press
+#  action:
+#    - service: homeassistant.turn_on
+#      data:
+#       entity_id: light.luz_despacho
+#       brightness_pct: 50
+
+#- alias: Luz Despacho 100
+#  initial_state: 'on'
+#  trigger:
+#    platform: event
+#    event_type: xiaomi_aqara.click
+#    event_data:
+#      entity_id: binary_sensor.switch_158d0001f9f509
+#      click_type: double
+#  action:
+#    - service: homeassistant.turn_on
+#      data:
+#       entity_id: light.luz_despacho
+#       brightness_pct: 100

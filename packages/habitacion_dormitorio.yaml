@@ -1,0 +1,152 @@
+####################
+##  Dispositivos  ##
+####################
+switch:
+  - platform: broadlink
+    host: 192.168.3.211
+    mac: !secret broadlink_dormitorio_mac
+
+media_player:
+  - platform: smartir
+    name: TV Dormitorio
+    device_code: 1040
+    controller_data: 192.168.3.211
+    power_sensor: binary_sensor.tv_dormitorio
+
+#light:
+#  - platform: group
+#    name: Dormitorio
+#    entities:
+#      - light.dormitorio1
+#      - light.dormitorio2
+#      - light.dormitorio3
+
+
+################
+##  Sensores  ##
+################
+sensor:
+  - platform: template
+    sensors:
+      windchill_dormitorio:
+        value_template: "{{ (states('sensor.dormitorio_temperatura')|float + 0.348*(((states('sensor.dormitorio_humedad')|float/100)*6.105)*(2.71828**((17.27*states('sensor.dormitorio_temperatura')|float)/(237.7+states('sensor.dormitorio_temperatura')|float)))) - 4.25) | round(2) }}"
+        friendly_name: Dormitorio - Sensación térmica
+        icon_template: mdi:thermometer-lines
+        device_class: temperature   
+        unit_of_measurement: '°C'
+
+  - platform: mold_indicator
+    name: Dormitorio Moho
+    indoor_temp_sensor: sensor.dormitorio_temperatura
+    indoor_humidity_sensor: sensor.dormitorio_humedad
+    outdoor_temp_sensor: sensor.barcelona_temperature
+    calibration_factor: 2.0
+#calibration_factor = (temp_indoor - temp_outdoor) / (temp_criticalpoint - temp_outdoor)
+
+binary_sensor:
+  - platform: template
+    sensors:
+      tv_dormitorio:
+        friendly_name: TV Dormitorio
+        value_template: >-
+          {{ is_state('media_player.chromecast_dormitorio', 'off') or is_state('media_player.chromecast_dormitorio', 'idle') or is_state('media_player.chromecast_dormitorio', 'playing') }}
+#        icon_template: >-
+#          {% if is_state('media_player.chromecast_dormitorio', 'unavailable') %}
+#            mdi:television-off
+#          {% else %}
+#            mdi:television
+#          {% endif %}
+
+
+###############
+##  Scripts  ##
+###############
+script:
+  tv_dormitorio_10min_off:
+    sequence:
+      - service: media_player.volume_set
+        data:
+          entity_id: media_player.alexa_dormitorio
+          volume_level: 0.1
+      - service: notify.alexa_media
+        data_template:
+          target:
+            - media_player.alexa_dormitorio
+          data:
+            type: tts
+          message: >
+            {% if is_state('binary_sensor.tv_dormitorio', 'off') %}
+              La televisión ya se encuentra apagada
+            {% else %}
+              La televisión se apagará en 10 minutos
+            {% endif %}
+      - condition: state
+        entity_id: binary_sensor.tv_dormitorio
+        state: 'on'
+      - delay: '00:10:00'
+      - service: media_player.turn_off
+        data:
+          entity_id: media_player.tv_dormitorio
+
+  tv_dormitorio_20min_off:
+    sequence:
+      - service: media_player.volume_set
+        data:
+          entity_id: media_player.alexa_dormitorio
+          volume_level: 0.1
+      - service: notify.alexa_media
+        data_template:
+          target:
+            - media_player.alexa_dormitorio
+          data:
+            type: tts
+          message: >
+            {% if is_state('binary_sensor.tv_dormitorio', 'off') %}
+              La televisión ya se encuentra apagada
+            {% else %}
+              La televisión se apagará en 20 minutos
+            {% endif %}
+      - condition: state
+        entity_id: binary_sensor.tv_dormitorio
+        state: 'on'
+      - delay: '00:20:00'
+      - service: media_player.turn_off
+        data:
+          entity_id: media_player.tv_dormitorio
+
+  tv_dormitorio_30min_off:
+    sequence:
+      - service: media_player.volume_set
+        data:
+          entity_id: media_player.alexa_dormitorio
+          volume_level: 0.1
+      - service: notify.alexa_media
+        data_template:
+          target:
+            - media_player.alexa_dormitorio
+          data:
+            type: tts
+          message: >
+            {% if is_state('binary_sensor.tv_dormitorio', 'off') %}
+              La televisión ya se encuentra apagada
+            {% else %}
+              La televisión se apagará en 30 minutos
+            {% endif %}
+      - condition: state
+        entity_id: binary_sensor.tv_dormitorio
+        state: 'on'
+      - delay: '00:30:00'
+      - service: media_player.turn_off
+        data:
+          entity_id: media_player.tv_dormitorio
+
+
+#######################
+##  Personalizacion  ##
+#######################
+homeassistant:
+  customize:
+    sensor.dormitorio_presion:
+      unit_of_measurement: mbar
+    sensor.dormitorio_moho:
+      icon: mdi:biohazard

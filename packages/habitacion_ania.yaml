@@ -1,0 +1,31 @@
+################
+##  Sensores  ##
+################
+sensor:
+  - platform: template
+    sensors:
+      windchill_ania:
+        value_template: "{{ (states('sensor.ania_temperatura')|float + 0.348*(((states('sensor.ania_humedad')|float/100)*6.105)*(2.71828**((17.27*states('sensor.ania_temperatura')|float)/(237.7+states('sensor.ania_temperatura')|float)))) - 4.25) | round(2) }}"
+        friendly_name: Ania - Sensación térmica
+        icon_template: mdi:thermometer-lines
+        device_class: temperature   
+        unit_of_measurement: '°C'
+
+  - platform: mold_indicator
+    name: Ania Moho
+    indoor_temp_sensor: sensor.ania_temperatura
+    indoor_humidity_sensor: sensor.ania_humedad
+    outdoor_temp_sensor: sensor.barcelona_temperature
+    calibration_factor: 2.0
+#calibration_factor = (temp_indoor - temp_outdoor) / (temp_criticalpoint - temp_outdoor)
+
+
+#######################
+##  Personalización  ##
+#######################
+homeassistant:
+  customize:
+    sensor.ania_presion:
+      unit_of_measurement: mbar
+    sensor.ania_moho:
+      icon: mdi:biohazard

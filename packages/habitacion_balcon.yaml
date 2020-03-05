@@ -1,0 +1,21 @@
+################
+##  Sensores  ##
+################
+sensor:
+  - platform: template
+    sensors:
+      windchill_balcon:
+        value_template: "{{ (states('sensor.balcon_temperatura')|float + 0.348*(((states('sensor.balcon_humedad')|float/100)*6.105)*(2.71828**((17.27*states('sensor.balcon_temperatura')|float)/(237.7+states('sensor.balcon_temperatura')|float)))) - 4.25) | round(2) }}"
+        friendly_name: Sensación térmica
+        icon_template: mdi:thermometer-lines
+        device_class: temperature   
+        unit_of_measurement: '°C'
+
+
+#######################
+##  Personalizacion  ##
+#######################
+homeassistant:
+  customize:
+    sensor.balcon_presion:
+      unit_of_measurement: mbar

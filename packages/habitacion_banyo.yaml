@@ -1,0 +1,77 @@
+################
+##  Sensores  ##
+################
+sensor:
+  - platform: template
+    sensors:
+      windchill_banyo:
+        value_template: "{{ (states('sensor.banyo_temperatura')|float + 0.348*(((states('sensor.banyo_humedad')|float/100)*6.105)*(2.71828**((17.27*states('sensor.banyo_temperatura')|float)/(237.7+states('sensor.banyo_temperatura')|float)))) - 4.25) | round(2) }}"
+        friendly_name: Balcón - Sensación térmica
+        icon_template: mdi:thermometer-lines
+        device_class: temperature   
+        unit_of_measurement: '°C'
+
+  - platform: mold_indicator
+    name: banyo_moho
+    indoor_temp_sensor: sensor.banyo_temperatura
+    indoor_humidity_sensor: sensor.banyo_humedad
+    outdoor_temp_sensor: sensor.barcelona_temperature
+    calibration_factor: 2.0
+#calibration_factor = (temp_indoor - temp_outdoor) / (temp_criticalpoint - temp_outdoor)
+
+switch:
+  - platform: mqtt
+    name: "Estufa"
+    icon: mdi:radiator
+    state_topic: "stat/estufa/POWER"
+    command_topic: "cmnd/estufa/POWER"
+    availability_topic: "tele/estufa/LWT"
+    payload_on: "ON"
+    payload_off: "OFF"
+    payload_available: "Online"
+    payload_not_available: "Offline"
+    retain: false
+
+
+###############
+##  Scripts  ##
+###############
+script:
+  aa_banyo_auto:
+    sequence:
+      - service_template: >
+          {% if states('sensor.banyo_temperatura') | float < 22  %}
+            service: switch.turn_on
+            entity_id: switch.estufa
+          {% else  %}
+            service: notify.alexa_media_comedor
+            data:
+              data:
+                type: announce
+                method: speak
+              message: "No hace frio como para encender la estufa"
+          {% endif %}
+
+  aa_banyo_fan:
+    sequence:
+      - service: notify.alexa_media_banyo
+        data:
+          data:
+            type: announce
+            method: speak
+          message: "En esta habitación no hay ventilador"
+
+#  aa_banyo_on:
+#    sequence:
+#      - service: switch.turn_on
+#        entity_id: switch.estufa
+
+
+#######################
+##  Personalizacion  ##
+#######################
+homeassistant:
+  customize:
+    sensor.banyo_moho:
+      icon: mdi:biohazard
+      friendly_name: Baño moho
