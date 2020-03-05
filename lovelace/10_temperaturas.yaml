@@ -1,0 +1,178 @@
+title: Temperaturas
+icon: mdi:air-conditioner
+cards:
+  - type: custom:swipe-card
+    card_width: '155px'
+    start_card: 2
+    parameters:
+      effect: 'coverflow'
+      grabCursor: true
+      centeredSlides: true
+      slidesPerView: 'auto'
+      coverflowEffect:
+        rotate: 50
+        stretch: 0
+        depth: 100
+        modifier: 1
+        slideShadows : true
+      pagination:
+        type: 'bullets'
+    cards:
+      - type: sensor
+        entity: sensor.comedor_temperatura
+        name: Comedor
+      - type: sensor
+        entity: sensor.dormitorio_temperatura
+        name: Dormitorio
+      - type: sensor
+        entity: sensor.ania_temperatura
+        name: Ania
+      - type: sensor
+        entity: sensor.balcon_temperatura
+        name: Balcón
+      - type: sensor
+        entity: sensor.banyo_temperatura
+        name: Baño
+      - type: sensor
+        entity: sensor.cocina_temperatura
+        name: Cocina
+      - type: sensor
+        entity: sensor.despacho_temperatura
+        name: Despacho
+      - type: sensor
+        entity: sensor.invitados_temperatura
+        name: Invitados
+
+  - type: custom:swipe-card
+    card_width: '155px'
+    start_card: 2
+    parameters:
+      effect: 'coverflow'
+      grabCursor: true
+      centeredSlides: true
+      slidesPerView: 'auto'
+      coverflowEffect:
+        rotate: 50
+        stretch: 0
+        depth: 100
+        modifier: 1
+        slideShadows : true
+      pagination:
+        type: 'bullets'
+    cards:
+      - type: sensor
+        entity: sensor.comedor_humedad
+        name: Comedor
+      - type: sensor
+        entity: sensor.dormitorio_humedad
+        name: Dormitorio
+      - type: sensor
+        entity: sensor.ania_humedad
+        name: Ania
+      - type: sensor
+        entity: sensor.balcon_humedad
+        name: Balcón
+      - type: sensor
+        entity: sensor.banyo_humedad
+        name: Baño
+      - type: sensor
+        entity: sensor.cocina_humedad
+        name: Cocina
+      - type: sensor
+        entity: sensor.despacho_humedad
+        name: Despacho
+      - type: sensor
+        entity: sensor.invitados_humedad
+        name: Invitados
+
+  - type: custom:vertical-stack-in-card
+    cards:
+      - type: thermostat
+        entity: climate.aa_comedor
+        name: Comedor
+      - type: entities
+        entities:
+          - type: divider
+          - entity: binary_sensor.aa_agua
+            tap_action:
+              action: call-service
+              service: browser_mod.popup
+              service_data:
+                deviceID: this
+                title: Notificaciones Telegram
+                card:
+                  type: entities
+                  entities:
+                    - automation.aa_agua_msg
+          - type: divider
+          - input_number.aa_comedor_temp_heat_on
+          - input_number.aa_comedor_temp_heat_auto
+          - type: divider
+          - input_number.aa_comedor_temp_cool_on
+          - input_number.aa_comedor_temp_cool_auto
+          - type: divider
+          - entity: group.aa_comedor_automatismos
+            tap_action:
+              action: call-service
+              service: browser_mod.popup
+              service_data:
+                deviceID: this
+                title: Programacion AA comedor
+                card:
+                  type: entities
+                  entities:
+                    - automation.aa_comedor_on_laborable
+                    - input_datetime.aa_comedor_on_laborable
+                    - automation.aa_comedor_off_laborable
+                    - input_datetime.aa_comedor_off_laborable        
+                    - type: divider
+                    - automation.aa_comedor_on_festivo
+                    - input_datetime.aa_comedor_on_festivo
+                    - automation.aa_comedor_off_festivo
+                    - input_datetime.aa_comedor_off_festivo
+
+  - type: custom:vertical-stack-in-card
+    cards:
+      - type: thermostat
+        entity: climate.aa_dormitorio
+        name: Dormitorio
+      - type: entities
+        entities:
+          - type: divider
+          - entity: binary_sensor.aa_agua
+            tap_action:
+              action: call-service
+              service: browser_mod.popup
+              service_data:
+                deviceID: this
+                title: Mensajes deposito agua
+                card:
+                  type: entities
+                  entities:
+                    - automation.aa_agua_msg
+          - type: divider
+          - input_number.aa_dormitorio_temp_heat_on
+          - input_number.aa_dormitorio_temp_heat_auto
+          - type: divider
+          - input_number.aa_dormitorio_temp_cool_on
+          - input_number.aa_dormitorio_temp_cool_auto
+          - type: divider
+          - entity: group.aa_dormitorio_automatismos
+            tap_action:
+              action: call-service
+              service: browser_mod.popup
+              service_data:
+                deviceID: this
+                title: Programacion AA dormitorio
+                card:
+                  type: entities
+                  entities:
+                    - automation.aa_dormitorio_on_laborable
+                    - input_datetime.aa_dormitorio_on_laborable
+                    - automation.aa_dormitorio_off_laborable
+                    - input_datetime.aa_dormitorio_off_laborable        
+                    - type: divider
+                    - automation.aa_dormitorio_on_festivo
+                    - input_datetime.aa_dormitorio_on_festivo
+                    - automation.aa_dormitorio_off_festivo
+                    - input_datetime.aa_dormitorio_off_festivo

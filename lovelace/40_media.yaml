@@ -1,0 +1,237 @@
+title: Media
+icon: mdi:movie
+cards:
+  - type: custom:vertical-stack-in-card
+    cards:
+    - type: entities
+      entities:
+      - input_select.alexa_msg_destination
+      - type: custom:text-input-row
+        entity: input_text.alexa_msg_text
+    - type: horizontal-stack
+      cards:
+        - type: entities
+          entities:
+            - entity: input_boolean.alexa_whispered
+              name: Susurro
+        - type: "custom:button-card"
+          entity: script.alexa_msg_send
+          show_icon: false
+          styles:
+            card:
+              - height: 80px
+              - width: 300px
+
+  - type: custom:mini-media-player
+    entity: media_player.alexa_comedor
+  - type: custom:mini-media-player
+    entity: media_player.alexa_dormitorio
+  - type: custom:mini-media-player
+    entity: media_player.alexa_banyo
+
+#  - type: entities
+#    show_header_toggle: false
+#    entities:
+#      - type: custom:mini-media-player
+#        entity: media_player.alexa_comedor
+#      - type: custom:mini-media-player
+#        entity: media_player.alexa_dormitorio
+#      - type: custom:mini-media-player
+#        entity: media_player.alexa_banyo
+
+
+#      - type: custom:mini-media-player
+#        entity: media_player.alexa_en_todas_partes
+#        group: true
+#        source: icon
+#        info: short
+#        hide:
+#          volume: true
+#          power: true
+#      - type: custom:mini-media-player
+#        entity: media_player.alexa_comedor
+#        group: true
+#        hide:
+#          controls: true
+#      - type: custom:mini-media-player
+#        entity: media_player.alexa_dormitorio
+#        group: true
+#        hide:
+#          controls: true
+#      - type: custom:mini-media-player
+#        entity: media_player.alexa_banyo
+#        group: true
+#        hide:
+#          controls: true        
+
+  - type: vertical-stack
+    cards:
+      - type: conditional
+        conditions:
+          - entity: media_player.samsung_46f7000
+            state_not: "unavailable" 
+        card:
+          type: media-control
+          entity: media_player.samsung_46f7000
+      - type: conditional
+        conditions:
+          - entity: media_player.samsung_tv_remote
+            state_not: "unavailable" 
+        card:
+          type: media-control
+          entity: media_player.samsung_tv_remote
+      - type: conditional
+        conditions:
+          - entity: media_player.samsung_tv
+            state_not: "unavailable" 
+        card:
+          type: media-control
+          entity: media_player.samsung_tv
+      - type: conditional
+        conditions:
+          - entity: media_player.tv_dormitorio
+            state_not: "unavailable"
+        card:
+          type: media-control
+          entity: media_player.tv_dormitorio
+#      - type: conditional
+#        conditions:
+#          - entity: media_player.alexa_comedor
+#            state_not: "unavailable"
+#        card:
+#          type: media-control
+#          entity: media_player.alexa_comedor
+#      - type: conditional
+#        conditions:
+#          - entity: media_player.alexa_dormitorio
+#            state_not: "unavailable"
+#        card:
+#          type: media-control
+#          entity: media_player.alexa_dormitorio
+#      - type: conditional
+#        conditions:
+#          - entity: media_player.alexa_banyo
+#            state_not: "unavailable"
+#        card:
+#          type: media-control
+#          entity: media_player.alexa_banyo
+      - type: conditional
+        conditions:
+          - entity: media_player.chromecast_dormitorio
+            state_not: "unavailable" 
+        card:
+          type: media-control
+          entity: media_player.chromecast_dormitorio
+      - type: conditional
+        conditions:
+          - entity: media_player.mibox_ania
+            state_not: "unavailable"
+        card:
+          type: media-control
+          entity: media_player.mibox_ania
+      - type: conditional
+        conditions:
+          - entity: media_player.xiaomi_gateway_radio
+            state_not: "unavailable"
+        card:
+          type: media-control
+          entity: media_player.xiaomi_gateway_radio
+          
+  - type: vertical-stack
+    cards:
+      - type: entities
+        title: Transcodificacion
+        show_header_toggle: false
+        entities:
+          - sensor.ffmpeg_cpu_template
+      - type: conditional
+        conditions:
+          - entity: media_player.emby_samsung_46f7000
+            state_not: "unavailable" 
+        card:
+          type: media-control
+          entity: media_player.emby_samsung_46f7000
+      - type: conditional
+        conditions:
+          - entity: media_player.emby_chromecast_dormitorio
+            state_not: "unavailable" 
+        card:
+          type: media-control
+          entity: media_player.emby_chromecast_dormitorio
+      - type: conditional
+        conditions:
+          - entity: media_player.emby_op3_jcc
+            state_not: "unavailable" 
+        card:
+          type: media-control
+          entity: media_player.emby_op3_jcc
+      - type: conditional
+        conditions:
+          - entity: media_player.emby_op3_isset
+            state_not: "unavailable" 
+        card:
+          type: media-control
+          entity: media_player.emby_op3_isset
+      - type: conditional
+        conditions:
+          - entity: media_player.emby_ulefone_ania
+            state_not: "unavailable" 
+        card:
+          type: media-control
+          entity: media_player.emby_ulefone_ania
+      - type: conditional
+        conditions:
+          - entity: media_player.emby_redmi7_ania
+            state_not: "unavailable" 
+        card:
+          type: media-control
+          entity: media_player.emby_redmi7_ania
+      - type: conditional
+        conditions:
+          - entity: media_player.emby_samsung_salvagnini
+            state_not: "unavailable" 
+        card:
+          type: media-control
+          entity: media_player.emby_samsung_salvagnini
+      - type: conditional
+        conditions:
+          - entity: media_player.emby_onda_ania
+            state_not: "unavailable" 
+        card:
+          type: media-control
+          entity: media_player.emby_onda_ania
+      - type: conditional
+        conditions:
+          - entity: media_player.emby_dell_chrome_jcc
+            state_not: "unavailable" 
+        card:
+          type: media-control
+          entity: media_player.emby_dell_chrome_jcc
+      - type: conditional
+        conditions:
+          - entity: media_player.emby_hp_chrome_jcc
+            state_not: "unavailable" 
+        card:
+          type: media-control
+          entity: media_player.emby_hp_chrome_jcc
+      - type: conditional
+        conditions:
+          - entity: media_player.plex_samsung_46f7000
+            state_not: "unavailable" 
+        card:
+          type: media-control
+          entity: media_player.plex_samsung_46f7000
+      - type: conditional
+        conditions:
+          - entity: media_player.plex_mibox_ania
+            state_not: "unavailable" 
+        card:
+          type: media-control
+          entity: media_player.plex_mibox_ania
+      - type: conditional
+        conditions:
+          - entity: media_player.plex_hp_chrome_jcc
+            state_not: "unavailable" 
+        card:
+          type: media-control
+          entity: media_player.plex_hp_chrome_jcc

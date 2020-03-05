@@ -1,0 +1,357 @@
+title: Aspiradora
+icon: mdi:mdi:robot-vacuum
+cards:
+  - type: custom:vertical-stack-in-card
+    cards:
+    - type: picture-elements
+      #title: Vacuum
+      image: /local/images/vacuum_card.jpg
+      elements:
+        # Botones con Funciones de Vacuum
+        - type: icon
+          icon: mdi:stop
+          tap_action:
+            action: call-service
+            service: vacuum.stop
+            service_data:
+              entity_id:  vacuum.xiaomi_vacuum_cleaner
+          style:
+            top: 92%
+            left: 7%
+            color: '#00000'
+        - type: icon
+          icon: mdi:play
+          tap_action:
+            action: call-service
+            service: vacuum.start
+            service_data:
+              entity_id:  vacuum.xiaomi_vacuum_cleaner
+          style:
+            top: 92%
+            left: 20%
+        - type: icon
+          icon: mdi:pause
+          tap_action:
+            action: call-service
+            service: vacuum.pause
+            service_data:
+              entity_id:  vacuum.xiaomi_vacuum_cleaner
+          style:
+            top: 92%
+            left: 35%
+            color: '#00000'                    
+        - type: icon
+          icon: mdi:home
+          tap_action:
+            action: call-service
+            service: vacuum.return_to_base
+            service_data:
+              entity_id:  vacuum.xiaomi_vacuum_cleaner
+          style:
+            top: 92%
+            left: 50%
+            color: '#00000'
+        - type: icon
+          icon: mdi:crosshairs
+          tap_action:
+            action: call-service
+            service: vacuum.clean_spot
+            service_data:
+              entity_id:  vacuum.xiaomi_vacuum_cleaner
+          style:
+            top: 92%
+            left: 65%
+            color: '#00000'  
+        - type: icon
+          icon: mdi:bell-ring
+          tap_action:
+            action: call-service
+            service: vacuum.locate
+            service_data:
+              entity_id:  vacuum.xiaomi_vacuum_cleaner
+          style:
+            top: 92%
+            left: 80%
+            color: '#00000'  
+        - type: icon
+          icon: mdi:information
+          entity:  vacuum.xiaomi_vacuum_cleaner
+          style:
+            top: 92%
+            left: 95%
+            color: '#00000'                   
+        # Etiquetas Azules
+        - type: state-label
+          prefix: 'Tiempo Limpieza: '
+          entity: sensor.vacuum_cleaning_time
+          style:
+            top: 6%
+            left: 1%
+            color: rgb(255, 255, 255)
+            transform: translate(0%,-50%)
+            pointer-events: none
+            font-family: Trebuchet MS
+            font-size: 100%
+            font-weight: bold
+            border-color: rgb(34, 154, 210)
+            background-color: '#3090C7'
+            border-radius: 6px
+        - type: state-label
+          prefix: 'Área Limpiada: '
+          entity: sensor.vacuum_cleaned_area
+          style:
+            top: 6%
+            right: 1%
+            color: rgb(255, 255, 255)
+            transform: translate(0%,-50%)
+            pointer-events: none
+            font-family: Trebuchet MS
+            font-size: 100%
+            font-weight: bold
+            border-color: rgb(34, 154, 210)
+            background-color: '#3090C7'
+            border-radius: 6px
+        # Etiqueta Central
+        - type: state-label
+#          tap_action: more-info
+          entity:  vacuum.xiaomi_vacuum_cleaner
+          style:
+            top: 20%
+            right: 37%
+            color: rgb(255, 255, 255)
+            transform: translate(0%,-50%)
+            font-family: Trebuchet MS
+            font-size: 200%
+            font-weight: bold
+            border-color: rgb(34, 154, 210)
+            border-radius: 6px
+            background-color: '#cccccc'
+        # Etiquetas Lateral Derecho
+        - type: state-label
+          prefix: 'Limpieza sensores: '
+          entity: sensor.vacuum_sensors_clean_left
+          style:
+            top: 48%
+            right: 1%
+            color: '#ffffff'
+            transform: translate(0%,-50%)
+            pointer-events: none
+            font-family: Trebuchet MS
+            font-size: 100%
+            font-weight: bold
+            border-right-style: solid
+            border-color: rgb(34, 154, 210)                
+            background-color: "rgba(0, 0, 0, 0.3)"
+            border-radius: 6px
+        - type: state-label
+          prefix: 'Cepillo Principal: '
+          entity: sensor.vacuum_main_brush_left
+          style:
+            top: 58%
+            right: 1%
+            color: '#ffffff'
+            transform: translate(0%,-50%)
+            pointer-events: none
+            font-family: Trebuchet MS
+            font-size: 100%
+            font-weight: bold
+            border-right-style: solid
+            border-color: rgb(34, 154, 210)                
+            background-color: "rgba(0, 0, 0, 0.3)"
+            border-radius: 6px
+        - type: state-label
+          prefix: 'Cepillo Lateral: '
+          entity: sensor.vacuum_side_brush_left 
+          style:
+            top: 68%
+            right: 1%
+            color: '#ffffff'
+            transform: translate(0%,-50%)
+            pointer-events: none
+            font-family: Trebuchet MS
+            font-size: 100%
+            font-weight: bold
+            border-right-style: solid
+            border-color: rgb(34, 154, 210)                
+            background-color: "rgba(0, 0, 0, 0.3)"
+            border-radius: 6px
+        - type: state-label
+          prefix: 'Estado Filtro: '
+          entity: sensor.vacuum_filter_left
+          style:
+            top: 78%
+            right: 1%
+            color: '#ffffff'
+            transform: translate(0%,-50%)
+            pointer-events: none
+            font-family: Trebuchet MS
+            font-size: 100%
+            font-weight: bold
+            border-right-style: solid
+            border-color: rgb(34, 154, 210)                
+            background-color: "rgba(0, 0, 0, 0.3)"
+            border-radius: 6px
+        # Etiquetas Lateral Izquierdo
+        - type: state-label
+          prefix: 'Programa: '
+          entity: group.vacuum_auto_on
+          style:
+            top: 48%
+            left: 1%
+            color: '#ffffff'
+            transform: translate(0%,-50%)
+            pointer-events: none
+            font-family: Trebuchet MS
+            font-size: 100%
+            font-weight: bold
+            border-left-style: solid
+            border-color: rgb(34, 154, 210)                
+            background-color: "rgba(0, 0, 0, 0.3)"
+            border-radius: 6px
+        - type: state-label
+          prefix: 'Batería: '
+          entity: sensor.vacuum_battery_level
+          style:
+            top: 58%
+            left: 1%
+            color: '#ffffff'
+            transform: translate(0%,-50%)
+            pointer-events: none
+            font-family: Trebuchet MS
+            font-size: 100%
+            font-weight: bold
+            border-left-style: solid
+            border-color: rgb(34, 154, 210)                
+            background-color: "rgba(0, 0, 0, 0.3)"
+            border-radius: 6px
+        - type: state-label
+          prefix: 'Modo Aspiración: '
+          entity: sensor.vacuum_fan_speed
+          style:
+            top: 68%
+            left: 1%
+            color: '#ffffff'
+            transform: translate(0%,-50%)
+            pointer-events: none
+            font-family: Trebuchet MS
+            font-size: 100%
+            font-weight: bold
+            border-left-style: solid
+            border-color: rgb(34, 154, 210)                
+            background-color: "rgba(0, 0, 0, 0.3)"
+            border-radius: 6px
+        - type: state-label
+          prefix: 'Última Limpieza: '
+          entity: sensor.vacuum_clean_stop
+          style:
+            top: 78%
+            left: 1%
+            color: '#ffffff'
+            transform: translate(0%,-50%)
+            pointer-events: none
+            font-family: Trebuchet MS
+            font-size: 100%
+            font-weight: bold
+            border-left-style: solid
+            border-color: rgb(34, 154, 210)                
+            background-color: "rgba(0, 0, 0, 0.3)"
+            border-radius: 6px
+
+    - type: entities
+      entities:
+        - entity: group.vacuum_msg
+          tap_action:
+            action: call-service
+            service: browser_mod.popup
+            service_data:
+              deviceID: this
+              title: Notificaciones Telegram
+              card:
+                type: entities
+                entities:
+                  - input_select.vacuum_msg_destination
+                  - automation.vacuum_msg_charging
+                  - automation.vacuum_msg_error
+                  - automation.vacuum_msg_finish
+                  - automation.vacuum_msg_pause
+                  - automation.vacuum_msg_return
+                  - automation.vacuum_msg_start
+                  - automation.vacuum_msg_start_zone
+        - type: divider
+        - input_datetime.vacuum_auto_hour
+    - type: horizontal-stack
+      cards:
+        - type: custom:button-card
+          entity: input_boolean.vacuum_auto_day0
+          icon: mdi:alpha-l-box-outline
+          color: rgb(30, 30, 30)
+          show_name: false
+        - type: custom:button-card
+          entity: input_boolean.vacuum_auto_day1
+          icon: mdi:alpha-m-box-outline
+          color: rgb(30, 30, 30)
+          show_name: false
+        - type: custom:button-card
+          entity: input_boolean.vacuum_auto_day2
+          icon: mdi:alpha-x-box-outline
+          color: rgb(30, 30, 30)
+          show_name: false
+        - type: custom:button-card
+          entity: input_boolean.vacuum_auto_day3
+          icon: mdi:alpha-j-box-outline
+          color: rgb(30, 30, 30)
+          show_name: false
+        - type: custom:button-card
+          entity: input_boolean.vacuum_auto_day4
+          icon: mdi:alpha-v-box-outline
+          color: rgb(30, 30, 30)
+          show_name: false
+        - type: custom:button-card
+          entity: input_boolean.vacuum_auto_day5
+          icon: mdi:alpha-s-box-outline
+          color: rgb(30, 30, 30)
+          show_name: false
+        - type: custom:button-card
+          entity: input_boolean.vacuum_auto_day6
+          icon: mdi:alpha-d-box-outline
+          color: rgb(30, 30, 30)
+          show_name: false
+
+    - type: entities
+      entities:
+        - type: divider
+        - input_number.vacuum_passes_manual
+        - input_select.vacuum_fan_speed_manual
+#        - input_text.vacuum_zone
+    - type: horizontal-stack
+      cards:
+        - type: custom:button-card
+          entity: input_boolean.vacuum_zone_diningroom
+          name: Comedor
+          color: rgb(30, 30, 30)
+          icon: mdi:silverware
+        - type: custom:button-card
+          entity: input_boolean.vacuum_zone_bedrooms
+          name: Dormitorios
+          color: rgb(30, 30, 30)
+          icon: mdi:hotel
+        - type: custom:button-card
+          entity: input_boolean.vacuum_zone_kitchen
+          name: Cocina
+          color: rgb(30, 30, 30)
+          icon: mdi:stove
+        - type: custom:button-card
+          entity: input_boolean.vacuum_zone_office
+          name: Despacho
+          color: rgb(30, 30, 30)
+          icon: mdi:briefcase
+    - type: conditional
+      conditions:
+        - entity: group.vacuum_zone
+          state: "on" 
+#        - entity:  vacuum.xiaomi_vacuum_cleaner
+#          state: "docked" 
+      card:
+        type: entities
+        entities:
+          - script.vacuum_zone_manual

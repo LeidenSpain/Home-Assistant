@@ -1,0 +1,216 @@
+title: Servidor
+icon: mdi:desktop-classic
+cards:
+  - type: gauge
+    unit: días
+    entity: sensor.ssl_certificate_expiry
+    min: 0
+    max: 90
+    severity:
+      green: 60
+      yellow: 30
+      red: 10
+
+  - type: entities
+    title: Home Assistant
+    show_header_toggle: false
+    entities:
+      - sensor.uptime_templated
+      - entity: sensor.current_version
+        tap_action:
+          action: call-service
+          service: browser_mod.popup
+          service_data:
+            deviceID: this
+            title: Informacion entidades
+            card:
+              type: entities
+              entities:
+                - sensor.count_sensor
+                - sensor.count_switch
+                - sensor.count_binarysensor
+                - sensor.count_automation
+                - sensor.count_inputboolean
+                - sensor.count_inputnumber
+                - sensor.count_inputselect
+                - sensor.count_inputtext
+                - sensor.count_inputdatetime
+                - sensor.count_group
+                - sensor.count_script
+                - sensor.count_camera
+      - sensor.last_ha_version
+      - script.restart_home_assistant
+#      - script.update_home_assistant
+      - sensor.home_assistant_log
+      - sensor.home_assistant_v2_db
+      - automation.zigbee_lost_connection
+
+  - type: entities
+    title: Servidor
+    show_header_toggle: false
+    entities:
+      - sensor.time
+      - sensor.date_template
+      - sensor.day_night
+#      - entity: binary_sensor.workday_sensor
+      - sensor.workday_template
+      - sensor.last_boot_templated
+      - sensor.server_uptime
+      - type: divider
+      - sensor.server_current_power
+      - entity: sensor.server_current_power_cost
+        tap_action:
+          action: call-service
+          service: browser_mod.popup
+          service_data:
+            deviceID: this
+            title: Coste Servidor
+            card:
+              type: entities
+              entities:
+                - sensor.server_cost_hourly
+                - sensor.server_cost_daily
+                - sensor.server_cost_weekly
+                - sensor.server_cost_monthly
+                - sensor.server_cost_yearly
+      - type: divider
+      - type: custom:bar-card
+        entity: sensor.processor_use
+        animation: off
+        indicator: off
+        height: 25px
+        padding: 2px
+        severity:
+          - value: 0
+            color: '#008000'
+          - value: 45
+            color: '#ffff00'
+          - value: 85
+            color: '#ff0000'
+        card_style:
+          border-radius: 0px
+          background: 'rgba(0, 0, 0, 0.0)'
+          box-shadow: 'inset 2px 2px 3px 1px rgba(0, 0, 0, 0.0)'
+      - sensor.cpu_speed
+      - sensor.cpu_temperature
+      - sensor.load_15m
+      - sensor.memory_use_percent
+      - type: divider
+#      - sensor.disk_free
+      - type: custom:bar-card
+        title: System (64Gb)
+        entity: sensor.disk_use_percent
+        height: 25px
+        padding: 2px
+        severity:
+          - value: 25
+            color: '#bf4040'
+          - value: 50
+            color: '#bf9540'
+          - value: 75
+            color: '#40bf40'
+        card_style:
+          border-radius: 0px
+          background: 'rgba(0, 0, 0, 0.0)'
+          box-shadow: 'inset 2px 2px 3px 1px rgba(0, 0, 0, 0.0)'
+#      - sensor.disk_free_mnt_mis_documentos
+      - type: custom:bar-card
+        title: Documentos (1Tb)
+        entity: sensor.disk_use_percent_mnt_mis_documentos
+        height: 25px
+        padding: 2px
+        severity:
+          - value: 25
+            color: '#bf4040'
+          - value: 50
+            color: '#bf9540'
+          - value: 75
+            color: '#40bf40'
+        card_style:
+          border-radius: 0px
+          background: 'rgba(0, 0, 0, 0.0)'
+          box-shadow: 'inset 2px 2px 3px 1px rgba(0, 0, 0, 0.0)'
+#      - sensor.disk_free_mnt_server_media
+      - type: custom:bar-card
+        title: Media (3Tb)
+        entity: sensor.disk_use_percent_mnt_server_media
+        height: 25px
+        padding: 2px
+        severity:
+          - value: 25
+            color: '#bf4040'
+          - value: 50
+            color: '#bf9540'
+          - value: 75
+            color: '#40bf40'
+        card_style:
+          border-radius: 0px
+          background: 'rgba(0, 0, 0, 0.0)'
+          box-shadow: 'inset 2px 2px 3px 1px rgba(0, 0, 0, 0.0)'
+
+  - type: entities
+    title: Aplicaciones
+    show_header_toggle: false
+    entities:
+      - switch.service_amazondash
+      - switch.service_bluetooth
+      - sensor.amule_cpu_template
+#      - sensor.amule_cpu
+      - switch.amule
+#      - sensor.firefox_cpu_template
+#      - switch.firefox
+
+  - type: entities
+    title: Backup HA
+    show_header_toggle: false
+    entities:
+      - script.backup_ha
+      - sensor.last_backup_ha
+      - sensor.backup_size_total_ha
+      - sensor.backup_count_ha
+      - automation.backup_diario_ha
+      - script.backup_clean_ha
+      - automation.limpieza_diaria_backup_ha
+      - input_number.days_cleanbackup_ha
+
+  - type: entities
+    title: Backup Emby
+    show_header_toggle: false
+    entities:
+      - script.backup_emby
+      - sensor.last_backup_emby
+      - sensor.backup_size_total_emby
+      - sensor.backup_count_emby
+      - automation.backup_diario_emby
+      - script.backup_clean_emby
+      - automation.limpieza_diaria_backup_emby
+      - input_number.days_cleanbackup_emby
+
+#  - type: entities
+#    title: Network
+#    show_header_toggle: false
+#    entities:
+#      - sensor.speedtest_download
+#      - sensor.speedtest_upload
+#      - sensor.speedtest_ping
+
+  - type: horizontal-stack
+    cards:
+      - type: sensor
+        entity: sensor.speedtest_download
+        name: Down
+        hours_to_show: 24
+        graph: line
+        detail: 1
+      - type: sensor
+        entity: sensor.speedtest_upload
+        name: Up
+        hours_to_show: 24
+        graph: line
+        detail: 1
+      - type: sensor
+        entity: sensor.speedtest_ping
+        name: Ping
+        hours_to_show: 24
+        graph: line
+        detail: 1

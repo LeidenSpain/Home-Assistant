@@ -1,0 +1,208 @@
+title: Meteo
+icon: mdi:cloud-question
+cards:
+#  - type: sensor
+#    entity: sensor.co2_intensity_es
+#    name: Contaminación
+#    graph: line
+
+  - type: custom:air-visual-card
+    air_pollution_level: sensor.u_s_air_pollution_level
+    air_quality_index: sensor.u_s_air_quality_index
+    main_pollutant: sensor.u_s_main_pollutant
+    temp: weather.dark_sky
+    city: 'Barcelona'
+
+#  - type: custom:vertical-stack-in-card
+#    cards:
+#      - type: entities
+#        entities:
+#          - sensor.u_s_air_pollution_level
+#      - type: custom:mini-graph-card
+#        entities:
+#          - sensor.u_s_air_quality_index
+#        line_color: var(--accent-color)
+#        line_width: 8
+#        font_size: 75
+#        color_thresholds:
+#          - value: 0
+#            color: "#f0ffbf"
+#          - value: 51
+#            color: "#f0ff40"
+#          - value: 101
+#            color: "#ffbf00"
+#          - value: 151
+#            color: "#ff8000"
+#          - value: 201
+#            color: "#ff0000"
+#          - value: 301
+#            color: "#000000"
+
+  - type: custom:weather-card
+    entity: weather.dark_sky
+    entity_sun: sun.sun
+    name: Barcelona
+    icons: "/local/icons/weather_icons/animated/"
+
+  - type: entities
+    show_header_toggle: false
+    entities:
+      - entity: sensor.barcelona_summary
+        name: Resumen
+#      - entity: sensor.dark_sky_nearest_storm_distance
+#        name: Distancia tormenta más cercana
+#      - sensor.dark_sky_nearest_storm_bearing
+#      - sensor.storm_dir
+      - entity: sensor.barcelona_humidity
+        name: Humedad
+      - entity: sensor.barcelona_temperature
+        name: Temperatura
+      - entity: sensor.barcelona_apparent_temperature
+        name: Sensación térmica
+      - entity: sensor.barcelona_wind_speed
+        name: Velocidad del viento
+      - sensor.wind_dir
+      - entity: sensor.barcelona_precip
+        name: Precipitación
+      - entity: sensor.barcelona_precip_probability
+        name: Probabilidad lluvia
+      - entity: sensor.barcelona_precip_intensity
+        name: Intensidad lluvia
+      - entity: sensor.barcelona_uv_index
+        name: Indice UV
+      - entity: sensor.barcelona_daily_summary
+        name: Resumen diario
+      - entity: sensor.barcelona_pressure
+        name: Presion
+      - entity: sensor.barcelona_visibility
+        name: Visibilidad
+
+  - type: picture-entity
+    entity: camera.meteo_fijo
+    show_name: true
+    show_state: false
+
+  - type: picture-entity
+    entity: camera.meteo_movil
+    show_name: true
+    show_state: false
+
+  - type: custom:vertical-stack-in-card
+    cards:
+      - type: iframe
+        url: 'https://www.ventusky.com/?p=41.43;-5.20;4&l=clouds-total'
+        aspect_ratio: 113%
+
+      - type: iframe
+        url: 'https://embed.windy.com/embed2.html?lat=39.775&lon=-6.064&zoom=5&level=surface&overlay=rain&menu=&message=&marker=&calendar=12&pressure=&type=map&location=coordinates&detail=&detailLat=39.470&detailLon=-0.377&metricWind=km%2Fh&metricTemp=%C2%B0C&radarRange=-1%22%20frameborder=%220%22%3E%3C/iframe%3E'
+        aspect_ratio: 100%
+
+  - type: conditional
+    conditions:
+      - entity: sensor.alert
+        state_not: '0'
+    card:
+      type: custom:flex-table-card
+      title: today
+      entities:
+        include: sensor.alert
+      columns:
+        - attr_as_list: today
+          modify: x.code.concat(' ', x.event)
+          name: event
+        - attr_as_list: today
+          modify: x.txt
+          name: description
+        - attr_as_list: today
+          modify: x.end
+          name: expire
+
+  - type: conditional
+    conditions:
+      - entity: sensor.alert
+        state_not: '0'
+    card:
+      type: custom:flex-table-card
+      title: tomorrow
+      entities:
+        include: sensor.alert
+      columns:
+        - attr_as_list: tomorrow
+          modify: x.code.concat(' ', x.event)
+          name: event
+        - attr_as_list: tomorrow
+          modify: x.txt
+          name: description
+        - attr_as_list: tomorrow
+          modify: x.end
+          name: expire
+
+  - type: entities
+    show_header_toggle: false
+    entities:
+      - entity: automation.aviso_moho
+        icon: mdi:biohazard
+        tap_action:
+          action: call-service
+          service: browser_mod.popup
+          service_data:
+            deviceID: this
+            title: Sensores moho
+            card:
+              type: entities
+              entities:
+                - sensor.ania_moho
+                - sensor.banyo_moho
+                - sensor.cocina_moho
+                - sensor.comedor_moho
+                - sensor.despacho_moho
+                - sensor.dormitorio_moho
+                - sensor.invitados_moho
+
+
+
+
+
+#  - type: custom:dark-sky-weather-card
+#    title: XXXXXXXXXXXXXXX
+#    entity_sun: sun.sun
+#    entity_daily_summary: sensor.dark_sky_summary
+#    entity_current_conditions: sensor.dark_sky_icon
+#    entity_humidity: sensor.dark_sky_humidity
+#    entity_pressure: sensor.dark_sky_pressure
+#    entity_temperature: sensor.dark_sky_temperature
+#    entity_visibility: sensor.dark_sky_visibility
+#    entity_wind_bearing: sensor.dark_sky_wind_bearing
+#    entity_wind_speed: sensor.dark_sky_wind_speed
+#    entity_forecast_high_temp_1: sensor.dark_sky_daytime_high_temperature_1
+#    entity_forecast_high_temp_2: sensor.dark_sky_daytime_high_temperature_2
+#    entity_forecast_high_temp_3: sensor.dark_sky_daytime_high_temperature_3
+#    entity_forecast_high_temp_4: sensor.dark_sky_daytime_high_temperature_4
+#    entity_forecast_high_temp_5: sensor.dark_sky_daytime_high_temperature_5
+#    entity_forecast_low_temp_1: sensor.dark_sky_overnight_low_temperature_1
+#    entity_forecast_low_temp_2: sensor.dark_sky_overnight_low_temperature_2
+#    entity_forecast_low_temp_3: sensor.dark_sky_overnight_low_temperature_3
+#    entity_forecast_low_temp_4: sensor.dark_sky_overnight_low_temperature_4
+#    entity_forecast_low_temp_5: sensor.dark_sky_overnight_low_temperature_5
+#    entity_forecast_icon_1: sensor.dark_sky_icon_1
+#    entity_forecast_icon_2: sensor.dark_sky_icon_2
+#    entity_forecast_icon_3: sensor.dark_sky_icon_3
+#    entity_forecast_icon_4: sensor.dark_sky_icon_4
+#    entity_forecast_icon_5: sensor.dark_sky_icon_5    
+#    entity_summary_1: sensor.dark_sky_summary_1
+#    entity_summary_2: sensor.dark_sky_summary_2
+#    entity_summary_3: sensor.dark_sky_summary_3
+#    entity_summary_4: sensor.dark_sky_summary_4
+#    entity_summary_5: sensor.dark_sky_summary_5
+#    locale: es
+#    time_format: 24
+#    static_icons: false
+#    sunset: true
+#    tooltips: true
+#    tooltip_bg_color: 'rgb( 75,155,239)'
+#    tooltip_border_color: orange
+#    tooltip_border_width: 3
+#    tooltip_caret_size: 10
+#    tooltip_fg_color: '#fff'
+#    tooltip_left_offset: -5
+#    tooltip_width: 100

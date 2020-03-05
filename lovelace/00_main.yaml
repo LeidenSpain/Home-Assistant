@@ -1,0 +1,206 @@
+title: Main
+cards:
+  - type: custom:vertical-stack-in-card
+    cards:
+      - type: glance
+        entities:
+          - device_tracker.amazfit_bip_jcc
+          - device_tracker.mi_band_4_isset
+          - device_tracker.mi_band_2_ania
+      - type: custom:auto-entities
+        show_empty: false
+        card:
+          type: glance
+        filter:
+          include:
+            - domain: device_tracker
+              state: home
+          exclude:
+            - entity_id: device_tracker.amazfit_bip_jcc
+            - entity_id: device_tracker.mi_band_4_isset
+            - entity_id: device_tracker.mi_band_2_ania
+
+  - type: entities
+    show_header_toggle: false
+    entities:
+      - entity: automation.movimiento_notificacion
+        tap_action:
+          action: call-service
+          service: browser_mod.popup
+          service_data:
+            deviceID: this
+            title: Notificacion Telegram
+            card:
+              type: entities
+              entities:
+                - input_select.vacuum_msg_destination
+      - alarm_control_panel.house
+
+#  - type: alarm-panel
+##    title: Comedor
+#    show_header_toggle: false
+#    entity: alarm_control_panel.alarma
+#    states:
+#      - arm_away
+#      - arm_night
+
+  - type: vertical-stack
+    cards:
+      - type: horizontal-stack
+        cards:
+          - type: custom:mini-graph-card
+            show:
+              icon: false
+              extrema: true
+            entities:
+              - sensor.comedor_temperatura
+            height: 75
+            color_thresholds:
+              - value: 0
+                color: "#CCE5FF"
+              - value: 10
+                color: "#66B2FF"
+              - value: 18
+                color: "#0080FF"
+              - value: 20
+                color: "#87c087"
+              - value: 21
+                color: "#389638"
+              - value: 24
+                color: "#FF9932"
+              - value: 25
+                color: "#FF8000"
+              - value: 26
+                color: "#ff0000"
+          - type: custom:mini-graph-card
+            show:
+              icon: false
+              extrema: true
+            entities:
+              - sensor.dormitorio_temperatura
+            height: 75
+            color_thresholds:
+              - value: 0
+                color: "#CCE5FF"
+              - value: 10
+                color: "#66B2FF"
+              - value: 18
+                color: "#0080FF"
+              - value: 20
+                color: "#87c087"
+              - value: 21
+                color: "#389638"
+              - value: 24
+                color: "#FF9932"
+              - value: 25
+                color: "#FF8000"
+              - value: 26
+                color: "#ff0000"
+      - type: horizontal-stack
+        cards:
+          - type: custom:mini-graph-card
+            show:
+              icon: false
+              extrema: true
+            entities:
+              - sensor.ania_temperatura
+            height: 75
+            color_thresholds:
+              - value: 0
+                color: "#CCE5FF"
+              - value: 10
+                color: "#66B2FF"
+              - value: 18
+                color: "#0080FF"
+              - value: 20
+                color: "#87c087"
+              - value: 21
+                color: "#389638"
+              - value: 24
+                color: "#FF9932"
+              - value: 25
+                color: "#FF8000"
+              - value: 26
+                color: "#ff0000"
+          - type: custom:mini-graph-card
+            show:
+              icon: false
+              extrema: true
+            entities:
+              - sensor.balcon_temperatura
+            height: 75
+            color_thresholds:
+              - value: 0
+                color: "#CCE5FF"
+              - value: 10
+                color: "#66B2FF"
+              - value: 18
+                color: "#0080FF"
+              - value: 20
+                color: "#87c087"
+              - value: 21
+                color: "#389638"
+              - value: 24
+                color: "#FF9932"
+              - value: 25
+                color: "#FF8000"
+              - value: 26
+                color: "#ff0000"
+
+  - type: custom:auto-entities
+    show_empty: false
+    card:
+      type: glance
+      title: Baterias a controlar
+    filter:
+      include:
+        - entity_id: sensor.battery*
+          state: < 25
+          
+  - type: custom:vertical-stack-in-card
+    cards:
+      - type: entities
+        title: Trayectos
+        show_header_toggle: false
+        entities:
+          - input_select.origin
+          - input_select.destination
+#          - sensor.trayecto
+      - type: custom:travel-time-card
+        entities:
+          - entity: sensor.trayecto
+            zone: zone.home
+            name: Trayecto
+      - type: divider
+      - type: entities
+#        title: Trayectos
+        show_header_toggle: false
+        entities:
+          - sensor.trayecto_colegio
+          - automation.aviso_trafico_colegio
+
+  - type: picture-glance
+    title: Comedor
+    camera_image: camera.comedor
+    entities:
+      - entity: script.camera_snapshot
+        tap_action:
+          action: call-service
+          service: homeassistant.turn_on
+          service_data:
+            entity_id: script.camera_snapshot
+      - entity: script.camera_record
+        tap_action:
+          action: call-service
+          service: homeassistant.turn_on
+          service_data:
+            entity_id: script.camera_record
+
+#  - type: picture-entity 
+#    title: Comedor
+#    entity: camera.comedor
+#    camera_image: camera.comedor
+#    camera_view: live
+#    show_info: false
+#    tap_action: dialog
+#    double_tap_action: more-info

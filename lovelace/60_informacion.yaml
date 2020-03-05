@@ -1,0 +1,235 @@
+title: Informacion
+icon: mdi:information
+cards:
+  - type: vertical-stack
+    cards:
+      - type: entities
+        title: Precio Luz
+        show_header_toggle: false
+        entities:
+          - sensor.luz_scrape_fecha
+          - sensor.luz_scrape_hora
+          - type: custom:fold-entity-row
+            head: sensor.actual_eur_kwh
+            entities:
+              - sensor.precioluz_20ant
+              - sensor.precioluz_21ant
+              - sensor.precioluz_22ant
+              - sensor.precioluz_23ant
+              - sensor.precioluz_ree_fecha
+              - sensor.precioluz_00
+              - sensor.precioluz_01
+              - sensor.precioluz_02
+              - sensor.precioluz_03
+              - sensor.precioluz_04
+              - sensor.precioluz_05
+              - sensor.precioluz_06
+              - sensor.precioluz_07
+              - sensor.precioluz_08
+              - sensor.precioluz_09
+              - sensor.precioluz_10
+              - sensor.precioluz_11
+              - sensor.precioluz_12
+              - sensor.precioluz_13
+              - sensor.precioluz_14
+              - sensor.precioluz_15
+              - sensor.precioluz_16
+              - sensor.precioluz_17
+              - sensor.precioluz_18
+              - sensor.precioluz_19
+              - sensor.precioluz_20
+              - sensor.precioluz_21
+              - sensor.precioluz_22
+              - sensor.precioluz_23
+          - sensor.minimo_diario_hora
+          - sensor.minimo_diario_eur_kwh
+          - sensor.maximo_diario_hora
+          - sensor.maximo_diario_eur_kwh
+
+      - type: custom:bar-card
+        title_position: inside
+        show_value: "false"
+        columns: 29
+        height: 100px
+        severity:
+          - value: 0.08
+            color: '#e645ff'
+          - value: 0.10
+            color: '#40bf40'
+          - value: 0.11
+            color: '#55a1c9'
+          - value: 0.12
+            color: '#bf4040'
+          - value: 0.13
+            color: '#1f4040'
+        min: 0.05
+        max: 0.14
+        target: 0.10
+        # width: 100%
+        padding: 1px
+#        indicator: auto-vertical
+        #align: bottom
+        direction: up
+        animation: off
+        entities:
+          - entity: sensor.precioluz_20ant
+          - entity: sensor.precioluz_21ant
+          - entity: sensor.precioluz_22ant
+          - entity: sensor.precioluz_23ant
+          - entity: sensor.cpu_speed
+          - entity: sensor.precioluz_00
+          - entity: sensor.precioluz_01
+          - entity: sensor.precioluz_02
+          - entity: sensor.precioluz_03
+          - entity: sensor.precioluz_04
+          - entity: sensor.precioluz_05
+          - entity: sensor.precioluz_06
+          - entity: sensor.precioluz_07
+          - entity: sensor.precioluz_08
+          - entity: sensor.precioluz_09
+          - entity: sensor.precioluz_10
+          - entity: sensor.precioluz_11
+          - entity: sensor.precioluz_12
+          - entity: sensor.precioluz_13
+          - entity: sensor.precioluz_14
+          - entity: sensor.precioluz_15
+          - entity: sensor.precioluz_16
+          - entity: sensor.precioluz_17
+          - entity: sensor.precioluz_18
+          - entity: sensor.precioluz_19
+          - entity: sensor.precioluz_20
+          - entity: sensor.precioluz_21
+          - entity: sensor.precioluz_22
+          - entity: sensor.precioluz_23
+#          card_style:
+#            background: "#AA00AA"
+#            border-radius: 10px            
+#          title_style:
+#            color: '#FFFFFF'
+#            transform: rotate(-90deg)          
+#          value_style:
+#            color: '#FFFFFF'
+#            transform: rotate(-90deg)
+#          style:
+#            - text-transform: none
+#        style: 
+#          overflow: hidden                
+#          background-color: rgba(50,50,50,0.3)
+#          background-size: 100% 68px
+#          border-radius: 20px
+#          border: solid 1px rgba(100,100,100,0.3)
+#          box-shadow: 3px 3px rgba(0,0,0,0.4)
+
+  - type: alarm-panel
+    entity: alarm_control_panel.house
+
+  - type: custom:vertical-stack-in-card
+    cards:
+      - type: entities
+        show_header_toggle: false
+        entities:
+          - automation.aviso_low_battery
+      - type: custom:auto-entities
+        card:
+          type: custom:bar-card
+          severity:
+            - value: 20
+              hue: '0'
+            - value: 45
+              hue: '60'
+            - value: 100
+              hue: '120'
+          title_position: inside
+          align: split
+          columns: 1
+          padding: 2px
+          title_style:
+            color: '#000000'
+            text-align: left
+            font-size: 22px
+          value_style:
+            color: '#FFF000'
+            font-size: 22px
+        filter:
+          include:
+            - entity_id: "sensor.battery*"
+
+  - type: entities
+    title: HACS
+    show_header_toggle: false
+    entities:
+      - sensor.potential_breaking_changes
+      - sensor.hacs
+
+#  - type: entities
+#    title: Shellys
+#    show_header_toggle: false
+#    entities:
+#      - automation.check_shellies_firmware_update
+#      - script.mqtt_upgrade_all_shellies
+
+  - type: conditional
+    conditions:
+      - entity: sensor.shellies_can_be_updated
+        state_not: "0"
+    card:
+      type: entities
+      entities:
+        - sensor.shellies_can_be_updated
+        - script.mqtt_upgrade_all_shellies
+
+  - type: vertical-stack
+    cards:
+      - type: glance
+        show_icon: true
+        show_name: true
+        show_state: true
+        title: Registro mundial
+        entities:
+          - entity: sensor.worldwide_coronavirus_confirmed
+            icon: 'mdi:emoticon-neutral-outline'
+            name: Confirmados
+          - entity: sensor.worldwide_coronavirus_current
+            icon: 'mdi:emoticon-frown-outline'
+            name: Actuales
+          - entity: sensor.worldwide_coronavirus_recovered
+            icon: 'mdi:emoticon-happy-outline'
+            name: Recuperados
+          - entity: sensor.worldwide_coronavirus_deaths
+            icon: 'mdi:emoticon-dead-outline'
+            name: Muertes
+      - type: glance
+        show_icon: true
+        show_name: true
+        show_state: true
+        title: Registro España
+        entities:
+          - entity: sensor.spain_coronavirus_confirmed
+            icon: 'mdi:emoticon-neutral-outline'
+            name: Confirmados
+          - entity: sensor.spain_coronavirus_current
+            icon: 'mdi:emoticon-frown-outline'
+            name: Actuales
+          - entity: sensor.spain_coronavirus_recovered
+            icon: 'mdi:emoticon-happy-outline'
+            name: Recuperados
+          - entity: sensor.spain_coronavirus_deaths
+            icon: 'mdi:emoticon-dead-outline'
+            name: Muertes
+
+
+#  - type: vertical-stack
+#    cards:
+#      - type: custom:bignumber-card      
+#        entity: sensor.battery_llavero_jcc 
+#        title: LLavero JCC
+#        scale: 15px
+#        min: 0
+#        max: 100
+#        severity:
+#        - value: 20
+#          style: 'var(--label-badge-red)'
+#        - value: 45
+#          style: 'var(--label-badge-yellow)'
+#        - value: 100
+#          style: 'var(--label-badge-green)'

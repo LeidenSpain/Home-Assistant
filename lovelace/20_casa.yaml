@@ -1,0 +1,213 @@
+title: Casa
+icon: mdi:home-outline
+cards:
+  - type: entities
+    title: Comedor
+    show_header_toggle: false
+    entities:
+      - sensor.comedor_temperatura
+      - sensor.comedor_humedad
+      - sensor.comedor_presion
+      - sensor.windchill_comedor
+      - sensor.comedor_moho
+      - type: divider
+      - entity: light.comedor_mesa_entrada
+        type: custom:light-brightness-preset-row
+        name: Comedor Mesa Entrada
+        customTheme: false
+      - entity: light.comedor_mesa_entrada
+        tap_action:
+          action: call-service
+          service: browser_mod.popup
+          service_data:
+            deviceID: this
+            title: Lavavajillas Info
+            card:
+              type: entities
+              entities:
+                - light.comedor_mesa_entrada
+                - light.comedor_mesa_pasillo
+                - light.comedor_mesa
+                - automation.comedor_luz_mesa
+                - automation.comedor_luz_mesa_test
+      - sensor.comedor_iluminacion
+      - entity: binary_sensor.comedor_movimiento
+        secondary_info: last-changed
+      - switch.comedor_enchufe
+      - light.gateway_luz
+      - automation.comedor_luzpaso
+      - binary_sensor.comedor_aire_acondicionado
+      - type: divider
+      - cover.puerta
+      - type: custom:slider-entity-row
+        entity: cover.puerta
+        step: 5
+      - cover.ventana
+      - type: custom:slider-entity-row
+        entity: cover.ventana
+        step: 5
+      - binary_sensor.comedor_ventana_izq
+      - binary_sensor.comedor_ventana_der
+
+  - type: entities
+    title: Dormitorio
+    show_header_toggle: false
+    entities:
+      - sensor.dormitorio_temperatura
+      - sensor.dormitorio_humedad
+      - sensor.dormitorio_presion
+      - sensor.windchill_dormitorio
+      - sensor.dormitorio_moho
+      - type: divider
+      - binary_sensor.dormitorio_aire_acondicionado
+      
+  - type: entities
+    title: Habitacion Ania
+    show_header_toggle: false
+    entities:
+      - sensor.ania_temperatura
+      - sensor.ania_humedad
+      - sensor.ania_presion
+      - sensor.windchill_ania
+      - sensor.ania_moho
+
+  - type: entities
+    title: Cocina
+    show_header_toggle: false
+    entities:
+      - sensor.cocina_temperatura
+      - sensor.cocina_humedad
+      - sensor.windchill_cocina
+      - sensor.cocina_moho
+      - type: divider
+      - sensor.cocina_iluminacion
+      - entity: binary_sensor.cocina_movimiento
+        secondary_info: last-changed
+      - type: divider
+      - entity: switch.lavavajillas
+        tap_action:
+          action: call-service
+          service: browser_mod.popup
+          service_data:
+            deviceID: this
+            title: Lavavajillas Info
+            card:
+              type: entities
+              entities:
+                - sensor.lavavajillas_watios
+                - sensor.lavavajillas_amperios
+                - sensor.lavavajillas_voltios
+                - sensor.lavavajillas_hoy
+                - sensor.lavavajillas_ayer
+                - sensor.lavavajillas_total
+      - automation.lavavajillas_on
+      - entity: input_datetime.lavavajillas_on
+      - script.lavavajillas_auto
+      - entity: sensor.lavavajillas_current_power_cost
+        tap_action:
+          action: call-service
+          service: browser_mod.popup
+          service_data:
+            deviceID: this
+            title: Coste Lavavajillas
+            card:
+              type: entities
+              entities:
+                - sensor.lavavajillas_cost_hourly
+                - sensor.lavavajillas_cost_daily
+                - sensor.lavavajillas_cost_weekly
+                - sensor.lavavajillas_cost_monthly
+                - sensor.lavavajillas_cost_yearly
+      - type: divider
+      - entity: binary_sensor.lavadora
+        tap_action:
+          action: call-service
+          service: browser_mod.popup
+          service_data:
+            deviceID: this
+            title: Lavadora Info
+            card:
+              type: entities
+              entities:
+                - sensor.lavadora_watios
+                - sensor.lavadora_amperios
+                - sensor.lavadora_voltios
+                - sensor.lavadora_hoy
+                - sensor.lavadora_ayer
+                - sensor.lavadora_total
+                - automation.lavadora_terminada
+      - entity: sensor.lavadora_current_power_cost
+        tap_action:
+          action: call-service
+          service: browser_mod.popup
+          service_data:
+            deviceID: this
+            title: Coste Lavadora
+            card:
+              type: entities
+              entities:
+                - sensor.lavadora_cost_hourly
+                - sensor.lavadora_cost_daily
+                - sensor.lavadora_cost_weekly
+                - sensor.lavadora_cost_monthly
+                - sensor.lavadora_cost_yearly
+
+  - type: entities
+    title: Despacho
+    show_header_toggle: false
+    entities:
+      - sensor.despacho_temperatura
+      - sensor.despacho_humedad
+      - sensor.windchill_despacho
+      - sensor.despacho_moho
+      - type: divider
+      - switch.ania_media
+      - automation.miboxania_on
+      - entity: input_datetime.miboxania_on
+      - automation.miboxania_off
+      - entity: input_datetime.miboxania_off
+
+  - type: entities
+    title: Baño
+    show_header_toggle: false
+    entities:
+      - sensor.banyo_temperatura
+      - sensor.banyo_humedad
+      - sensor.windchill_banyo
+      - sensor.banyo_moho
+      - type: divider
+      - switch.estufa
+
+  - type: entities
+    title: Invitados
+    show_header_toggle: false
+    entities:
+      - sensor.invitados_temperatura
+      - sensor.invitados_humedad
+      - sensor.windchill_invitados
+      - sensor.invitados_moho
+
+  - type: entities
+    title: Entrada
+    show_header_toggle: false
+    entities:
+      - entity: binary_sensor.entrada_puerta
+        secondary_info: last-changed
+      - entity: binary_sensor.entrada_pulsador
+        secondary_info: last-changed
+      - entity: binary_sensor.llavero_jcc
+        secondary_info: last-changed
+      - entity: binary_sensor.llavero_isset
+        secondary_info: last-changed
+      - entity: binary_sensor.llavero_ania
+        secondary_info: last-changed
+      - automation.entrada_puerta_abierta
+
+  - type: entities
+    title: Balcon
+    show_header_toggle: false
+    entities:
+      - sensor.balcon_temperatura
+      - sensor.balcon_humedad
+      - sensor.balcon_presion
+      - sensor.windchill_balcon

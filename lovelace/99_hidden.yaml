@@ -1,0 +1,188 @@
+title: ' '
+cards:
+  - type: entities
+    title: grupos
+    show_header_toggle: false
+    entities:
+      - group.all_automations
+      - group.all_devices
+      - group.all_lights
+      - group.all_scripts
+      - group.all_switches
+      - group.all_vacuum_cleaners
+
+  - type: entities
+    title: comedor
+    show_header_toggle: false
+    entities:
+      - automation.aa_agua_msg
+      - switch.servidor_medidor
+      - input_datetime.aa_comedor_off_festivo
+      - input_datetime.aa_comedor_off_laborable
+      - input_datetime.aa_comedor_on_festivo
+      - input_datetime.aa_comedor_on_laborable
+      - automation.dash1
+      - script.aa_comedor_auto
+      - script.aa_comedor_cool
+      - script.aa_comedor_heat
+      - script.aa_comedor_off
+      - script.aa_comedor_activated
+      - script.aa_comedor_out_temperature
+      - script.aa_comedor_window_open
+      - automation.aa_comedor_off_festivo
+      - automation.aa_comedor_off_laborable
+      - automation.aa_comedor_on_festivo
+      - automation.aa_comedor_on_laborable
+
+  - type: entities
+    title: dormitorio
+    show_header_toggle: false
+    entities:
+      - input_datetime.aa_dormitorio_off_festivo
+      - input_datetime.aa_dormitorio_off_laborable
+      - input_datetime.aa_dormitorio_on_festivo
+      - input_datetime.aa_dormitorio_on_laborable
+      - script.aa_dormitorio_auto
+      - script.aa_dormitorio_cool
+      - script.aa_dormitorio_heat
+      - script.aa_dormitorio_off
+      - script.aa_dormitorio_activated
+      - script.aa_dormitorio_out_temperature
+      - script.aa_dormitorio_window_open
+      - automation.aa_dormitorio_off_festivo
+      - automation.aa_dormitorio_off_laborable
+      - automation.aa_dormitorio_on_festivo
+      - automation.aa_dormitorio_on_laborable
+      - script.tv_dormitorio_10min_off
+      - script.tv_dormitorio_20min_off
+      - script.tv_dormitorio_30min_off
+
+
+  - type: entities
+    title: vacuum
+    show_header_toggle: false
+    entities:
+      - input_select.vacuum_msg_destination
+      - vacuum.xiaomi_vacuum_cleaner
+      - automation.vacuum_auto_on
+      - group.vacuum_auto_on
+      - group.vacuum_zone
+      - sensor.vacuum_battery_level
+      - sensor.vacuum_clean_stop
+      - sensor.vacuum_cleaned_area
+      - sensor.vacuum_cleaning_count
+      - sensor.vacuum_cleaning_time
+      - sensor.vacuum_do_not_disturb
+      - sensor.vacuum_fan_speed
+      - sensor.vacuum_filter_left
+      - sensor.vacuum_main_brush_left
+      - sensor.vacuum_sensors_clean_left
+      - sensor.vacuum_side_brush_left
+      - sensor.vacuum_status
+      - sensor.vacuum_total_cleaned_area
+      - sensor.vacuum_total_cleaning_time
+      - script.vacuum_home
+      - script.vacuum_on
+      - script.vacuum_pause
+      - script.vacuum_zone_kitchen
+      - script.vacuum_zone_office
+      - script.vacuum_zone_diningroom
+      - script.vacuum_zone_bedrooms
+      - script.vacuum_zone_kitchen_manual
+      - script.vacuum_zone_office_manual
+      - script.vacuum_zone_diningroom_manual
+      - script.vacuum_zone_bedrooms_manual
+      - script.vacuum_fan_balanced
+      - script.vacuum_fan_max
+      - script.vacuum_fan_mop
+      - script.vacuum_fan_quiet
+      - script.vacuum_fan_turbo
+      - automation.vacuum_msg_charging
+      - automation.vacuum_msg_error
+      - automation.vacuum_msg_finish
+      - automation.vacuum_msg_pause
+      - automation.vacuum_msg_return
+      - automation.vacuum_msg_start
+      - automation.vacuum_msg_start_zone
+      - automation.vacuum_msg_maintenance
+
+  - type: entities
+    title: servidor
+    show_header_toggle: false
+    entities:
+      - binary_sensor.workday_sensor
+      - script.backup_emby_update_sensors
+      - script.backup_ha_update_sensors
+      - sensor.uptime
+      - sensor.date
+      - sensor.last_boot
+      - sensor.server_cost_daily
+      - sensor.server_cost_hourly
+      - sensor.server_cost_monthly
+      - sensor.server_cost_weekly
+      - sensor.server_cost_yearly
+      - sensor.process_amule
+      - sensor.amule_cpu
+
+  - type: entities
+    title: tracker
+    show_header_toggle: false
+    entities:
+      - automation.aviso_trafico_colegio
+      - device_tracker.amazfit_cor
+      - device_tracker.mi_band_2_juanrubio
+      - sensor.dest_address
+      - sensor.orig_address
+
+  - type: entities
+    title: meteo
+    show_header_toggle: false
+    entities:
+      - sun.sun
+      - sensor.barcelona_icon
+      - sensor.barcelona_wind_bearing
+      - sensor.u_s_main_pollutant
+      - group.sensores_moho
+
+  - type: entities
+    title: media
+    show_header_toggle: false
+    entities:
+      - automation.a_adb_start
+      - media_player.this_device
+      - media_player.alexa_op3_jcc
+      - media_player.alexa_en_todas_partes
+      - binary_sensor.tv_dormitorio
+      - sensor.ffmpeg_cpu
+      - sensor.process_ffmpeg
+
+  - type: entities
+    title: info
+    show_header_toggle: false
+    entities:
+      - automation.scrape_tarifa_luz
+
+  - type: entities
+    title: baterias
+    show_header_toggle: false
+    entities:
+      - sensor.battery_aa_agua
+      - sensor.battery_ania_temperatura
+      - sensor.battery_balcon_temperatura
+      - sensor.battery_banyo_temperatura
+      - sensor.battery_cocina_movimiento
+      - sensor.battery_cocina_temperatura
+      - sensor.battery_comedor_aa
+      - sensor.battery_comedor_movimiento
+      - sensor.battery_comedor_temperatura
+      - sensor.battery_comedor_ventana_der
+      - sensor.battery_comedor_ventana_izq
+      - sensor.battery_despacho_temperatura
+      - sensor.battery_dormitorio_aa
+      - sensor.battery_dormitorio_temperatura
+      - sensor.battery_entrada_puerta
+      - sensor.battery_entrada_pulsador
+      - sensor.battery_invitados_temperatura
+      - sensor.battery_llavero_ania
+      - sensor.battery_llavero_isset
+      - sensor.battery_llavero_jcc
