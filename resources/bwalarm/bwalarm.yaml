@@ -1,0 +1,74 @@
+platform: bwalarm
+panel:
+  cameras:
+  - camera.comedor
+  enable_clock: 'True'
+  enable_weather: 'False'
+  shadow_effect: 'True'
+  enable_serif_font: 'False'
+  panel_title: Alarma domestica
+  enable_fahrenheit: 'False'
+  hide_sidebar: 'False'
+  enable_sensors_panel: 'True'
+  enable_custom_panel: 'False'
+  round_buttons: 'True'
+  camera_update_interval: ''
+  enable_camera_panel: true
+  enable_floorplan_panel: false
+enable_night_mode: false
+states:
+  armed_away:
+    immediate:
+    - sensor.battery_entrada_puerta
+    - binary_sensor.comedor_ventana_izq
+    - binary_sensor.comedor_ventana_der
+    delayed: []
+    override: []
+    pending_time: 0
+    warning_time: 0
+    trigger_time: 600
+  armed_home:
+    immediate: []
+    delayed: []
+    override: []
+    pending_time: 0
+    warning_time: 0
+    trigger_time: 600
+  armed_night:
+    immediate: []
+    delayed: []
+    override: []
+    pending_time: 0
+    warning_time: 0
+    trigger_time: 600
+users:
+- id: 4070c6526f5340a18ba28dd4fa7ec075
+  name: Juan  
+  enabled: false
+  code: 4070c6526f5340a18ba28dd4fa7ec075
+  picture: ha.png
+- id: 9e33d1d6593a4565b258e60cddbcce3c
+  name: Isset
+  enabled: false
+  code: 9e33d1d6593a4565b258e60cddbcce3c
+  picture: ha.png
+- id: f7f1247aa13a498ca36f8584b6e24aa1
+  name: Home Assistant Cast
+  enabled: false
+  code: f7f1247aa13a498ca36f8584b6e24aa1
+  picture: ha.png
+- id: 9cf2a774dcc24988b905561865e341be
+  name: Home Assistant Cloud
+  enabled: false
+  code: 9cf2a774dcc24988b905561865e341be
+  picture: ha.png
+- id: c4ed61efe5ca4e4fa560050f5b802497
+  name: Legacy API password user
+  enabled: false
+  code: c4ed61efe5ca4e4fa560050f5b802497
+  picture: ha.png
+admin_password: 
+code: ''
+panic_code: ''
+enable_persistence: true
+code_to_arm: true

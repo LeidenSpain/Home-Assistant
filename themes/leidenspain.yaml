@@ -1,0 +1,66 @@
+LeidenSpain:
+  ### Main Interface Colors ###
+#  primary-color: "#4C3FF9"
+#  light-primary-color: "#6F64FA"
+#  primary-background-color: "#262938"
+#  secondary-background-color: var(--primary-background-color)
+#  divider-color: "#313549"
+#  accent-color: '#E45E65'                                                         # Accent color
+#  dark-primary-color: 'var(--accent-color)'                                       # Hyperlinks                                         
+  ha-card-border-radius: '20px'   
+  ha-card-background: 'rgba(150, 150, 150, 0.1)'
+                           
+  ### Text ###
+#  primary-text-color: "#F7F8FA"
+#  secondary-text-color: "#00ECCA"
+#  text-primary-color: "#FFFFFF"
+#  disabled-text-color: "#616387"
+
+  ### Sidebar Menu ###
+#  sidebar-icon-color: "#4C3FF9"
+#  sidebar-text-color: "#F7F8FA"
+#  sidebar-selected-background-color: var(--primary-background-color)
+#  sidebar-selected-icon-color: "#00ECCA"
+#  sidebar-selected-text-color: var(--sidebar-selected-icon-color)
+
+  ### States and Badges ###
+#  state-icon-color: "#00ECCA"
+#  state-icon-active-color: "#F7AA1C"
+#  state-icon-unavailable-color: var(--disabled-text-color)
+
+  ### Sliders ###
+#  paper-slider-knob-color: "#00ECCA"
+#  paper-slider-knob-start-color: var(--paper-slider-knob-color)
+#  paper-slider-pin-color: var(--paper-slider-knob-color)
+#  paper-slider-active-color: var(--paper-slider-knob-color)
+#  paper-slider-secondary-color: var(--light-primary-color)
+
+  ### Labels ###
+#  label-badge-background-color: "#2E2F40"
+#  label-badge-text-color: "#F7F8FA"
+#  label-badge-red: "#323346"
+
+  ### Cards ###
+#  paper-card-background-color: "#2E2F40"
+#  paper-listbox-background-color: var(--primary-background-color)
+
+  ### Toggles ###
+#  paper-toggle-button-checked-button-color: "#4C3FF9"
+#  paper-toggle-button-checked-bar-color: "#262938"
+#  paper-toggle-button-unchecked-button-color: var(--paper-toggle-button-checked-button-color)
+#  paper-toggle-button-unchecked-bar-color: "#262938"
+
+  ### Table row ###
+#  table-row-background-color: var(--primary-background-color)
+#  table-row-alternative-background-color: var(--secondary-background-color)
+
+
+
+#      style:
+#        border-radius: 0px 20px 20px 0px
+#        border: solid 1px rgba(100,100,100,0.3)
+#        box-shadow: 3px 3px rgba(0,0,0,0.4)    
+#        overflow: hidden
+#        background-repeat: no-repeat
+#        background-color: rgba(50,50,50,0.1)
+#        background-size: 100% 200px
