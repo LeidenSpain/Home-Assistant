@@ -1,0 +1,110 @@
+################
+##  Sensores  ##
+################
+sensor:
+  - platform: command_line
+    name: last backup ha
+    command: ls "/mnt/Mis Documentos/Backups/HA_backup" -Art | grep '.zip' | tail -n -1
+    scan_interval: 600
+
+  - platform: command_line
+    name: backup size total ha
+    command: du -sh "/mnt/Mis Documentos/Backups/HA_backup" | awk '{print $1}'
+    scan_interval: 600
+    
+  - platform: command_line
+    name: backup count ha
+    command: ls "/mnt/Mis Documentos/Backups/HA_backup" | wc -l
+    scan_interval: 600
+    
+input_number:
+  days_cleanbackup_ha:
+    min: 7
+    max: 60
+    step: 1
+    icon: mdi:calendar-star
+
+
+###############
+##  Scripts  ##
+###############
+script:
+  backup_ha:
+    alias: Backup HA
+    sequence:
+      - service: shell_command.backup_ha
+      - service: script.backup_ha_update_sensors
+
+  backup_clean_ha:
+    alias: Limpieza backups HA
+    sequence:
+      - service: shell_command.backup_clean_ha
+      - service: script.backup_ha_update_sensors
+
+  backup_ha_update_sensors:
+    alias: Backup HA Update Sensors
+    sequence:
+      - service: homeassistant.update_entity
+        entity_id : sensor.last_backup_ha
+      - service: homeassistant.update_entity
+        entity_id : sensor.backup_size_total_ha
+      - service: homeassistant.update_entity
+        entity_id : sensor.backup_count_ha
+        
+
+################
+##  Comandos  ##
+################
+shell_command:
+  backup_ha: cd "/mnt/Mis Documentos/Backups/HA_backup/" && zip -r "HA-backup-$(date +"%Y-%m-%d %H.%M").zip" /home/homeassistant/.homeassistant/ -x "*.log" -x "/*tts/*" -x "*.db" -x "*.db-shm" -x "*.db-wal" -x "*.mp3" -x "/*deps/*" -x "/*www/camera_shots/*" -x "/*.git/*" -x "/*shell/gif_maker/venv/*"
+  backup_clean_ha: find "/mnt/Mis Documentos/Backups/HA_backup/" -mtime +{{ states('input_number.days_cleanbackup_ha') | int }} -exec rm {} \;
+ 
+ 
+########################
+##  Automatizaciones  ##
+########################
+automation:
+  - alias: Backup diario HA
+    trigger:
+      - platform: time
+        at: 04:00:00
+    action:
+      - service: shell_command.backup_ha
+
+  - alias: Limpieza diaria Backup HA
+    trigger:
+      - platform: time
+        at: 04:10:00
+    action:
+      - service: shell_command.backup_clean_ha
+
+
+#######################
+##  Personalización  ##
+#######################
+homeassistant:
+  customize:
+    script.backup_ha:
+      friendly_name: Backup HA
+      icon: mdi:content-save
+    sensor.last_backup_ha:
+      friendly_name: Ultimo backup
+      icon: mdi:file-document
+    sensor.backup_size_total_ha:
+      friendly_name: Tamaño total backup
+      icon: mdi:archive
+    sensor.backup_count_ha:
+      friendly_name: Total backup
+      icon: mdi:format-list-numbered
+    automation.backup_diario_ha:
+      icon: mdi:calendar-clock
+    script.backup_clean_ha:
+      friendly_name: Limpieza backups HA
+      icon: mdi:delete-sweep
+    automation.limpieza_diaria_backup_ha:
+      icon: mdi:calendar-clock
+    script.backup_ha_update_sensors:
+      friendly_name: Actualizar sensores Backup HA
+      hidden: true
+    input_number.days_cleanbackup_ha:
+      friendly_name: Días respaldo

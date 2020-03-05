@@ -1,0 +1,293 @@
+﻿####################
+##  Dispositivos  ##
+####################
+climate:
+  - platform: smartir
+    name: AA Comedor
+    device_code: 1060
+    controller_data: 192.168.3.202
+    temperature_sensor: sensor.comedor_temperatura
+    humidity_sensor: sensor.comedor_humedad
+    power_sensor: binary_sensor.comedor_aire_acondicionado
+
+
+################
+##  Sensores  ##
+################
+input_number:
+  aa_comedor_temp_heat_on:
+    name: Calor ON
+    icon: mdi:trending-down
+    min: 15
+    max: 22
+    step: 0.5
+  aa_comedor_temp_heat_auto:
+    name: Temperatura Calor
+    icon: mdi:temperature-celsius
+    min: 18
+    max: 25
+    step: 1
+  aa_comedor_temp_cool_on:
+    name: Frio ON
+    icon: mdi:trending-up
+    min: 27
+    max: 35
+    step: 0.5
+  aa_comedor_temp_cool_auto:
+    name: Temperatura Frio
+    icon: mdi:temperature-celsius
+    min: 25
+    max: 32
+    step: 1
+
+input_datetime:
+  aa_comedor_on_laborable:
+    name: Hora encendido
+    icon: mdi:clock-outline   
+    has_date: false
+    has_time: true
+  aa_comedor_off_laborable:
+    name: Hora apagado
+    icon: mdi:clock-outline   
+    has_date: false
+    has_time: true
+  aa_comedor_on_festivo:
+    name: Hora encendido
+    icon: mdi:clock-outline   
+    has_date: false
+    has_time: true
+  aa_comedor_off_festivo:
+    name: Hora apagado
+    icon: mdi:clock-outline   
+    has_date: false
+    has_time: true
+
+sensor:
+  - platform: history_stats
+    name: AA comedor - Horas uso
+    entity_id: binary_sensor.comedor_aire_acondicionado
+    state: 'on'
+    start: '{{ 0 }}'
+    end: '{{ now() }}'
+
+
+###############
+##  Scripts  ##
+###############
+script:
+  aa_comedor_off:
+    sequence:
+      - condition: state
+        entity_id: binary_sensor.comedor_aire_acondicionado
+        state: 'on'
+      - service: climate.turn_off
+        data:
+          entity_id: climate.aa_comedor
+      - delay: '00:00:05'
+      - condition: state
+        entity_id: binary_sensor.comedor_aire_acondicionado
+        state: 'on'
+      - service: climate.turn_off
+        data:
+          entity_id: climate.aa_comedor
+
+  aa_comedor_auto:
+    sequence:
+#      - condition: state
+#        entity_id: binary_sensor.comedor_aire_acondicionado
+#        state: 'off'
+      - service_template: >
+          {% if is_state('binary_sensor.comedor_aire_acondicionado','on') %}
+            script.aa_comedor_activated
+          {% elif is_state('binary_sensor.comedor_ventana_izq','on') or is_state('binary_sensor.comedor_ventana_der','on') %}
+            script.aa_comedor_window_open
+          {% elif states('sensor.comedor_temperatura') | float <= states('input_number.aa_comedor_temp_cool_on') | int %}
+            script.aa_comedor_heat
+          {% elif states('sensor.comedor_temperatura') | float >= state('input_number.aa_comedor_temp_heat_on') | int %}
+            script.aa_comedor_cool
+          {% else %}
+            script.aa_comedor_out_temperature
+          {% endif %}
+
+  aa_comedor_heat:
+    sequence:
+      - service: climate.set_temperature
+        data_template:
+          entity_id: climate.aa_comedor
+          hvac_mode: heat
+          temperature: "{{ states('input_number.aa_comedor_temp_heat_auto') }}"
+      - delay: '00:00:02'
+      - service: climate.set_fan_mode
+        data:
+          entity_id: climate.aa_comedor
+          fan_mode: high
+
+  aa_comedor_cool:
+    sequence:
+      - service: climate.set_temperature
+        data_template:
+          entity_id: climate.aa_comedor
+          hvac_mode: cool
+          temperature: "{{ states('input_number.aa_comedor_temp_cool_auto') }}"
+      - delay: '00:00:02'
+      - service: climate.set_fan_mode
+        data:
+          entity_id: climate.aa_comedor
+          fan_mode: high
+
+  aa_comedor_fan:
+    sequence:
+      - service: climate.set_hvac_mode
+        data_template:
+          entity_id: climate.aa_comedor
+          hvac_mode: fan_only
+      - delay: '00:00:02'
+      - service: climate.set_fan_mode
+        data:
+          entity_id: climate.aa_comedor
+          fan_mode: high
+
+  aa_comedor_window_open:
+    sequence:
+#      - service: media_player.volume_set
+#        data:
+#          entity_id: media_player.alexa_comedor
+#          volume_level: 0.5
+      - service: notify.alexa_media_comedor
+        data:
+          data:
+            type: announce
+            method: speak
+          message: "La ventana está abierta, deberías probar antes a cerrarla."
+
+  aa_comedor_activated:
+    sequence:
+#      - service: media_player.volume_set
+#        data:
+#          entity_id: media_player.alexa_comedor
+#          volume_level: 0.5
+      - service: notify.alexa_media_comedor
+        data:
+          data:
+            type: announce
+            method: speak
+          message: "El aire acondicionado ya está encendido. Tendrás que configurar la temperatura más a tu gusto"
+
+  aa_comedor_out_temperature:
+    sequence:
+#      - service: media_player.volume_set
+#        data:
+#          entity_id: media_player.alexa_comedor
+#          volume_level: 0.5
+      - service: notify.alexa_media_comedor
+        data:
+          data:
+            type: announce
+            method: speak
+          message: "Pues yo diría que no hace ni frio ni calor. Así que no es necesario encender el aire acondicionado"
+
+
+########################
+##  Automatizaciones  ##
+########################
+automation:
+#  - alias: aa_comedor_filter_time
+#    trigger:
+#      - platform: template
+#        value_template: "{{ states('sensor.horas_uso_aa_comedor') >= '10:00:00' }}"
+#    action:
+#      - service: notify.telegram_familia
+#        data:
+#          message: "El aire acondicionado del comedor lleva {{states('sensor.horas_uso_aa_comedor')}} encendido. Por favor, limpiar el filtro"
+#      - service: notify.alexa_media
+#        data:
+#          target:
+#            - media_player.alexa_comedor
+#          data:
+#            type: tts
+#          message: "El aire acondicionado del comedor lleva {{states('sensor.horas_uso_aa_comedor')}} encendido. Por favor, limpiar el filtro"
+
+  - alias: aa_comedor_on_laborable
+    trigger:
+      - platform: template
+        value_template: "{{ states('sensor.time') == state_attr('input_datetime.aa_comedor_on_laborable', 'timestamp') | int | timestamp_custom('%H:%M', False) }}"
+    condition:
+      - condition: state
+        entity_id: 'binary_sensor.workday_sensor'
+        state: 'on'
+    action:
+      - service: script.aa_comedor_auto
+
+  - alias: aa_comedor_off_laborable
+    trigger:
+      - platform: template
+        value_template: "{{ states('sensor.time') == state_attr('input_datetime.aa_comedor_off_laborable', 'timestamp') | int | timestamp_custom('%H:%M', False) }}"
+    condition:
+      - condition: state
+        entity_id: 'binary_sensor.workday_sensor'
+        state: 'on'
+    action:
+      - service: script.aa_comedor_off
+
+  - alias: aa_comedor_on_festivo
+    trigger:
+      - platform: template
+        value_template: "{{ states('sensor.time') == state_attr('input_datetime.aa_comedor_on_festivo', 'timestamp') | int | timestamp_custom('%H:%M', False) }}"
+    condition:
+      - condition: state
+        entity_id: 'binary_sensor.workday_sensor'
+        state: 'off'
+    action:
+      - service: script.aa_comedor_auto
+
+  - alias: aa_comedor_off_festivo
+    trigger:
+      - platform: template
+        value_template: "{{ states('sensor.time') == state_attr('input_datetime.aa_comedor_off_festivo', 'timestamp') | int | timestamp_custom('%H:%M', False) }}"
+    condition:
+      - condition: state
+        entity_id: 'binary_sensor.workday_sensor'
+        state: 'off'
+    action:
+      - service: script.aa_comedor_off
+
+
+##############
+##  Grupos  ##
+##############
+group:
+  aa_comedor_automatismos:
+    name: Horarios programados Comedor
+    icon: mdi:calendar-clock
+    entities:
+      - automation.aa_comedor_on_laborable
+      - automation.aa_comedor_off_laborable
+      - automation.aa_comedor_on_festivo
+      - automation.aa_comedor_off_festivo
+
+
+#######################
+##  Personalizacion  ##
+#######################
+homeassistant:
+  customize:
+    binary_sensor.comedor_aire_acondicionado:
+      icon: mdi:air-conditioner
+    automation.aa_comedor_on_laborable:
+      friendly_name: Encendido laborable
+      icon: mdi:timetable
+    automation.aa_comedor_off_laborable:
+      friendly_name: Apagado laborable
+      icon: mdi:timetable
+    automation.aa_comedor_on_festivo:
+      friendly_name: Encendido festivo
+      icon: mdi:timetable
+    automation.aa_comedor_off_festivo:
+      friendly_name: Apagado festivo
+      icon: mdi:timetable
+
+
+## PENDIENTE ##
+# Crear contador de tiempo encendido
+# Al superar tiempo de temporizador, aviso de limpiar filtro
+# crear script para poner el contador a 0

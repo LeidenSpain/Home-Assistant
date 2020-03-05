@@ -1,0 +1,113 @@
+###############
+##  Scripts  ##
+###############
+script:
+  aa_auto:
+    sequence:
+      - service_template: >
+          {% if is_state('sensor.last_alexa','comedor') %}
+            script.aa_comedor_auto
+          {% elif is_state('sensor.last_alexa','dormitorio') %}
+            script.aa_dormitorio_auto
+          {% else %}
+            script.aa_banyo_auto
+          {% endif %}
+
+  aa_fan:
+    sequence:
+      - service_template: >
+          {% if is_state('sensor.last_alexa','comedor') %}
+            script.aa_comedor_fan
+          {% elif is_state('sensor.last_alexa','dormitorio') %}
+            script.aa_dormitorio_fan
+          {% else %}
+            script.aa_banyo_fan
+          {% endif %}
+
+
+########################
+##  Automatizaciones  ##
+########################
+automation:
+  - alias: aa_agua_msg
+    trigger:
+      - platform: state
+        entity_id: binary_sensor.aa_agua
+        from: 'off'
+        to: 'on'
+        for: '00:10:00'
+    condition:
+      condition: and
+      conditions:
+        - condition: state
+          entity_id: sensor.day_night
+          state: 'Día'
+        - condition: or
+          conditions:
+            - condition: state
+              entity_id: climate.aa_comedor
+              state: 'on'
+            - condition: state
+              entity_id: climate.aa_dormitorio
+              state: 'on'
+    action:
+      - service: notify.telegram_familia
+        data:
+          message: "El deposito del agua del aire acondicionado empieza a estar lleno. Habría que vaciarlo"
+      - service: notify.alexa_media_comedor
+        data:
+          data:
+            type: announce
+            method: speak
+          message: "El deposito del agua del aire acondicionado empieza a estar lleno. Habría que vaciarlo"
+      - delay: '24:00:00'
+      - condition: state
+        entity_id: binary_sensor.aa_agua
+        state: 'on'
+      - service: notify.telegram_familia
+        data:
+          message: "Habrá quitar el agua del aire... o eso o montamos una piscina"
+      - service: notify.alexa_media_comedor
+        data:
+          data:
+            type: announce
+            method: speak
+          message: "Habrá quitar el agua del aire... o eso o montamos una piscina"
+      - delay: '24:00:00'
+      - condition: state
+        entity_id: binary_sensor.aa_agua
+        state: 'on'
+      - service: notify.telegram_familia
+        data:
+          message: "Eh, que han pasado dos días y el agua del aire acondicionado sigue llenandose.... \U00002744"
+      - service: notify.alexa_media_comedor
+        data:
+          data:
+            type: announce
+            method: speak
+          message: "Eh, que han pasado dos días y el agua del aire acondicionado sigue llenandose...."
+      - delay: '24:00:00'
+      - condition: state
+        entity_id: binary_sensor.aa_agua
+        state: 'on'
+      - service: notify.telegram_familia
+        data:
+          message: "Vale, vale, he pillado la indirecta... prefieres dejar que otro salga fuera y quite el agua del aire... \U0001F6A8"
+      - service: notify.alexa_media_comedor
+        data:
+          data:
+            type: announce
+            method: speak
+          message: "Vale, vale, he pillado la indirecta... prefieres dejar que otro salga fuera y quite el agua del aire..."
+
+
+#######################
+##  Personalizacion  ##
+#######################
+homeassistant:
+  customize:
+    binary_sensor.aa_agua:
+      friendly_name: Deposito agua
+    automation.aa_agua_msg:
+      friendly_name: Avisos telegram
+      icon: mdi:telegram

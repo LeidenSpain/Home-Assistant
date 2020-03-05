@@ -1,0 +1,291 @@
+####################
+##  Dispositivos  ##
+####################
+climate:
+  - platform: smartir
+    name: AA Dormitorio
+    device_code: 1060
+    controller_data: 192.168.3.211
+    temperature_sensor: sensor.dormitorio_temperatura
+    humidity_sensor: sensor.dormitorio_humedad
+    power_sensor: binary_sensor.dormitorio_aire_acondicionado
+
+
+################
+##  Sensores  ##
+################
+input_number:
+  aa_dormitorio_temp_heat_on:
+    name: Calor ON
+    icon: mdi:trending-down
+    min: 15
+    max: 22
+    step: 0.5
+  aa_dormitorio_temp_heat_auto:
+    name: Temperatura Calor
+    icon: mdi:temperature-celsius
+    min: 18
+    max: 25
+    step: 1
+  aa_dormitorio_temp_cool_on:
+    name: Frio ON
+    icon: mdi:trending-up
+    min: 27
+    max: 35
+    step: 0.5
+  aa_dormitorio_temp_cool_auto:
+    name: Temperatura Frio
+    icon: mdi:temperature-celsius
+    min: 25
+    max: 32
+    step: 1
+
+input_datetime:
+  aa_dormitorio_on_laborable:
+    name: Hora encendido
+    icon: mdi:clock-outline   
+    has_date: false
+    has_time: true
+  aa_dormitorio_off_laborable:
+    name: Hora apagado
+    icon: mdi:clock-outline   
+    has_date: false
+    has_time: true
+  aa_dormitorio_on_festivo:
+    name: Hora encendido
+    icon: mdi:clock-outline   
+    has_date: false
+    has_time: true
+  aa_dormitorio_off_festivo:
+    name: Hora apagado
+    icon: mdi:clock-outline   
+    has_date: false
+    has_time: true
+
+sensor:
+  - platform: history_stats
+    name: AA dormitorio - Horas uso
+    entity_id: binary_sensor.dormitorio_aire_acondicionado
+    state: 'on'
+    start: '{{ 0 }}'
+    end: '{{ now() }}'
+
+
+###############
+##  Scripts  ##
+###############
+script:
+  aa_dormitorio_off:
+    sequence:
+      - condition: state
+        entity_id: binary_sensor.dormitorio_aire_acondicionado
+        state: 'on'
+      - service: climate.turn_off
+        data:
+          entity_id: climate.aa_dormitorio
+      - delay: '00:00:05'
+      - condition: state
+        entity_id: binary_sensor.dormitorio_aire_acondicionado
+        state: 'on'
+      - service: climate.turn_off
+        data:
+          entity_id: climate.aa_dormitorio
+
+  aa_dormitorio_auto:
+    sequence:
+#      - condition: state
+#        entity_id: binary_sensor.dormitorio_aire_acondicionado
+#        state: 'off'
+      - service_template: >
+          {% if is_state('binary_sensor.dormitorio_aire_acondicionado','open') %}
+            script.aa_dormitorio_activated
+          {% elif states('sensor.dormitorio_temperatura') | float <= states('input_number.aa_dormitorio_temp_cool_on') | int %}
+            script.aa_dormitorio_heat
+          {% elif states('sensor.dormitorio_temperatura') | float >= states('input_number.aa_dormitorio_temp_heat_on') | int %}
+            script.aa_dormitorio_cool
+          {% else %}
+            script.aa_dormitorio_out_temperature
+          {% endif %}
+
+  aa_dormitorio_heat:
+    sequence:
+      - service: climate.set_temperature
+        data_template:
+          entity_id: climate.aa_dormitorio
+          hvac_mode: heat
+          temperature: "{{ states('input_number.aa_dormitorio_temp_heat_auto') }}"
+      - delay: '00:00:02'
+      - service: climate.set_fan_mode
+        data:
+          entity_id: climate.aa_dormitorio
+          fan_mode: high
+
+  aa_dormitorio_cool:
+    sequence:
+      - service: climate.set_temperature
+        data_template:
+          entity_id: climate.aa_dormitorio
+          hvac_mode: cool
+          temperature: "{{ states('input_number.aa_dormitorio_temp_cool_auto') }}"
+      - delay: '00:00:02'
+      - service: climate.set_fan_mode
+        data:
+          entity_id: climate.aa_dormitorio
+          fan_mode: high
+
+  aa_comedor_fan:
+    sequence:
+      - service: climate.set_hvac_mode
+        data_template:
+          entity_id: climate.aa_dormitorio
+          hvac_mode: fan_only
+      - delay: '00:00:02'
+      - service: climate.set_fan_mode
+        data:
+          entity_id: climate.aa_dormitorio
+          fan_mode: high
+
+  aa_dormitorio_window_open:
+    sequence:
+#      - service: media_player.volume_set
+#        data:
+#          entity_id: media_player.alexa_dormitorio
+#          volume_level: 0.5
+      - service: notify.alexa_media_dormitorio
+        data:
+          data:
+            type: announce
+            method: speak
+          message: "No se puede enceder el aire acondicionado, al menos una de las ventanas está abierta"
+
+  aa_dormitorio_activated:
+    sequence:
+#      - service: media_player.volume_set
+#        data:
+#          entity_id: media_player.alexa_dormitorio
+#          volume_level: 0.5
+      - service: notify.alexa_media_dormitorio
+        data:
+          data:
+            type: announce
+            method: speak
+          message: "El aire acondicionado ya está encendido. Tendrás que configurar la temperatura más a tu gusto"
+
+  aa_dormitorio_out_temperature:
+    sequence:
+#      - service: media_player.volume_set
+#        data:
+#          entity_id: media_player.alexa_dormitorio
+#          volume_level: 0.5
+      - service: notify.alexa_media_dormitorio
+        data:
+          data:
+            type: announce
+            method: speak
+          message: "Pues yo diría que no hace ni frio ni calor. Así que no es necesario encender el aire acondicionado"
+
+
+########################
+##  Automatizaciones  ##
+########################
+automation:
+#  - alias: aa_dormitorio_filter_time
+#    trigger:
+#      - platform: template
+#        value_template: "{{ states('sensor.horas_uso_aa_dormitorio') >= '10:00:00' }}"
+#    action:
+#      - service: notify.telegram_familia
+#        data:
+#          message: "El aire acondicionado del dormitorio lleva {{states('sensor.horas_uso_aa_dormitorio')}} encendido. Por favor, limpiar el filtro"
+#      - service: notify.alexa_media
+#        data:
+#          target:
+#            - media_player.alexa_dormitorio
+#          data:
+#            type: tts
+#          message: "El aire acondicionado del dormitorio lleva {{states('sensor.horas_uso_aa_dormitorio')}} encendido. Por favor, limpiar el filtro"
+
+  - alias: aa_dormitorio_on_laborable
+    trigger:
+      - platform: template
+        value_template: "{{ states('sensor.time') == state_attr('input_datetime.aa_dormitorio_on_laborable', 'timestamp') | int | timestamp_custom('%H:%M', False) }}"
+    condition:
+      - condition: state
+        entity_id: 'binary_sensor.workday_sensor'
+        state: 'on'
+    action:
+      - service: script.aa_dormitorio_auto
+
+  - alias: aa_dormitorio_off_laborable
+    trigger:
+      - platform: template
+        value_template: "{{ states('sensor.time') == state_attr('input_datetime.aa_dormitorio_off_laborable', 'timestamp') | int | timestamp_custom('%H:%M', False) }}"
+    condition:
+      - condition: state
+        entity_id: 'binary_sensor.workday_sensor'
+        state: 'on'
+    action:
+      - service: script.aa_dormitorio_off
+
+  - alias: aa_dormitorio_on_festivo
+    trigger:
+      - platform: template
+        value_template: "{{ states('sensor.time') == state_attr('input_datetime.aa_dormitorio_on_festivo', 'timestamp') | int | timestamp_custom('%H:%M', False) }}"
+    condition:
+      - condition: state
+        entity_id: 'binary_sensor.workday_sensor'
+        state: 'off'
+    action:
+      - service: script.aa_dormitorio_auto
+
+  - alias: aa_dormitorio_off_festivo
+    trigger:
+      - platform: template
+        value_template: "{{ states('sensor.time') == state_attr('input_datetime.aa_dormitorio_off_festivo', 'timestamp') | int | timestamp_custom('%H:%M', False) }}"
+    condition:
+      - condition: state
+        entity_id: 'binary_sensor.workday_sensor'
+        state: 'off'
+    action:
+      - service: script.aa_dormitorio_off
+
+
+##############
+##  Grupos  ##
+##############
+group:
+  aa_dormitorio_automatismos:
+    name: Horarios programados Dormitorio
+    icon: mdi:calendar-clock
+    entities:
+      - automation.aa_dormitorio_on_laborable
+      - automation.aa_dormitorio_off_laborable
+      - automation.aa_dormitorio_on_festivo
+      - automation.aa_dormitorio_off_festivo
+
+
+#######################
+##  Personalizacion  ##
+#######################
+homeassistant:
+  customize:
+    binary_sensor.dormitorio_aire_acondicionado:
+      icon: mdi:air-conditioner
+    automation.aa_dormitorio_on_laborable:
+      friendly_name: Encendido laborable
+      icon: mdi:timetable
+    automation.aa_dormitorio_off_laborable:
+      friendly_name: Apagado laborable
+      icon: mdi:timetable
+    automation.aa_dormitorio_on_festivo:
+      friendly_name: Encendido festivo
+      icon: mdi:timetable
+    automation.aa_dormitorio_off_festivo:
+      friendly_name: Apagado festivo
+      icon: mdi:timetable
+
+
+## PENDIENTE ##
+# Crear contador de tiempo encendido
+# Al superar tiempo de temporizador, aviso de limpiar filtro
+# crear script para poner el contador a 0

@@ -1,0 +1,109 @@
+################
+##  Sensores  ##
+################
+sensor:
+  - platform: command_line
+    name: last backup emby
+    command: ls "/mnt/Mis Documentos/Backups/Emby_backup" -Art | grep '.zip' | tail -n -1
+    scan_interval: 600
+
+  - platform: command_line
+    name: backup size total emby
+    command: du -sh "/mnt/Mis Documentos/Backups/Emby_backup" | awk '{print $1}'
+    scan_interval: 600
+
+  - platform: command_line
+    name: backup count emby
+    command: ls "/mnt/Mis Documentos/Backups/Emby_backup" | wc -l
+    scan_interval: 600
+
+input_number:
+  days_cleanbackup_emby:
+    name: Días respaldo
+    min: 7
+    max: 30
+    step: 1
+    icon: mdi:calendar-star
+
+
+###############
+##  Scripts  ##
+###############
+script:
+  backup_emby:
+    alias: Backup Emby
+    sequence:
+      - service: shell_command.backup_emby
+      - service: script.backup_emby_update_sensors
+
+  backup_clean_emby:
+    alias: Limpieza backups Emby
+    sequence:
+      - service: shell_command.backup_clean_emby
+      - service: script.backup_emby_update_sensors
+
+  backup_emby_update_sensors:
+    alias: Backup Emby Update Sensors  
+    sequence:
+      - service: homeassistant.update_entity
+        entity_id : sensor.last_backup_emby
+      - service: homeassistant.update_entity
+        entity_id : sensor.backup_size_total_emby
+      - service: homeassistant.update_entity
+        entity_id : sensor.backup_count_emby
+
+
+################
+##  Comandos  ##
+################
+shell_command:
+  backup_emby: cd "/mnt/Mis Documentos/Backups/Emby_backup" && zip -r "Emby-backup-$(date +"%Y.%m.%d %H.%M").zip" /var/lib/emby/config /var/lib/emby/plugins /var/lib/emby/data/collections /var/lib/emby/data/playlists /var/lib/emby/data/displaypreferences.db /var/lib/emby/data/userdata_v2.db /var/lib/emby/data/users.db /var/lib/emby/data/library.db /var/lib/emby/metadata
+  backup_clean_emby: find "/mnt/Mis Documentos/Backups/Emby_backup/" -mtime +{{ states('input_number.days_cleanbackup_emby') | int }} -exec rm {} \;
+ 
+
+########################
+##  Automatizaciones  ##
+########################
+automation:
+  - alias: Backup diario Emby
+    trigger:
+      - platform: time
+        at: 05:00:00
+    action:
+      - service: shell_command.backup_emby
+
+  - alias: Limpieza diaria Backup Emby
+    trigger:
+      - platform: time
+        at: 05:10:00
+    action:
+      - service: shell_command.backup_clean_emby
+
+
+#########################
+##  Personalizaciónes  ##
+#########################
+homeassistant:
+  customize:
+    script.backup_emby:
+      friendly_name: Backup Emby
+      icon: mdi:content-save
+    sensor.last_backup_emby:
+      friendly_name: Ultimo backup
+      icon: mdi:file-document
+    sensor.backup_size_total_emby:
+      friendly_name: Tamaño total backup
+      icon: mdi:archive
+    sensor.backup_count_emby:
+      friendly_name: Total backup
+      icon: mdi:format-list-numbered
+    automation.backup_diario_emby:
+      icon: mdi:calendar-clock
+    script.backup_clean_emby:
+      friendly_name: Limpieza backups Emby
+      icon: mdi:delete-sweep
+    automation.limpieza_diaria_backup_emby:
+      icon: mdi:calendar-clock
+    script.backup_emby_update_sensors:
+      friendly_name: Actualizar sensores Backup Emby
+      hidden: true

@@ -1,0 +1,263 @@
+###################
+##  Dispositivos ##
+###################
+folder_watcher:
+  - folder: '/mnt/Mis Documentos/Camara_Seguridad/Auto'
+
+
+###################
+##  Informacion  ##
+###################
+input_select:
+  alarm_msg_destination:
+    icon: mdi:speedometer
+    name: Usuario telegram
+    options:
+      - Familiar
+      - JCC
+      - Isset
+
+
+###############
+##  Scripts  ##
+###############
+script:
+  alarma_on:
+    alias: Alarma ON
+    sequence:
+      - service: script.aa_dormitorio_off
+      - service: script.aa_comedor_off
+      - service: light.turn_off
+        entity_id: light.comedor_mesa
+
+  camera_snapshot:
+    alias: Camara Foto
+    sequence:
+      - service: camera.snapshot
+        data:
+          entity_id: camera.comedor
+          filename: '/mnt/Mis Documentos/Camara_Seguridad/Manual/comedor_{{ now().strftime("%Y-%m-%d %H.%M.%S") }}_manual.jpg'
+
+  camera_record:
+    alias: Camara Video
+    sequence:
+      - service: camera.record
+        data:
+          entity_id: camera.comedor
+          filename: '/mnt/Mis Documentos/Camara_Seguridad/Manual/comedor_{{ now().strftime("%Y-%m-%d %H.%M.%S") }}_manual.mp4'
+          duration: 60
+
+
+########################
+##  Automatizaciones  ##
+########################
+automation:
+  - alias: Alarma OFF
+    initial_state: 'on'
+    trigger:
+      - platform: state
+        entity_id: binary_sensor.llavero_jcc
+        to: 'off'
+#        for: '00:00:01'
+      - platform: state
+        entity_id: binary_sensor.llavero_isset
+        to: 'off'
+#        for: '00:00:01'
+      - platform: state
+        entity_id: binary_sensor.llavero_ania
+        to: 'off'
+#        for: '00:00:01'
+    condition:
+      - condition: state
+        entity_id: 'switch.comedor_enchufe'
+        state: 'off'
+#      - condition: state
+#        entity_id: alarm_control_panel.house
+#        state: armed_away
+    action:
+      - service_template: >
+          {% if trigger.entity_id == 'binary_sensor.llavero_jcc' %}
+            notify.telegram_jcc
+          {% elif trigger.entity_id == 'binary_sensor.llavero_isset' %}
+            notify.telegram_isset
+          {% else %}
+            notify.telegram_familia
+          {% endif %}
+        data_template:
+          message: >
+            {% if trigger.entity_id == 'binary_sensor.llavero_jcc' %}
+              Alarma desactivada por JCC
+            {% elif trigger.entity_id == 'binary_sensor.llavero_isset' %}
+              Alarma desactivada por Isset
+            {% elif trigger.entity_id == 'binary_sensor.llavero_ania' %}
+              Alarma desactivada por Ania
+            {% else %}
+              ALARMA DESACTIVADA POR ALGUIEN DESCONOCIDO
+            {% endif %}
+      - wait_template: "{{ is_state('binary_sensor.entrada_puerta', 'on') }}"
+      - delay: '00:00:04'
+      - service: xiaomi_aqara.play_ringtone
+        data_template:
+          gw_mac: !secret xiaomi_aqara_mac
+          ringtone_id: 10013
+          ringtone_vol: >
+            {% if 8 <= now().hour <= 23 %}
+              60
+            {% else %}
+              20
+            {% endif %}
+      - delay: '00:00:02'
+      - service: media_player.volume_set
+        data_template:
+          entity_id: media_player.alexa_comedor
+          volume_level: >
+            {% if 8 <= now().hour <= 23 %}
+              0.5
+            {% else %}
+              0.2
+            {% endif %}
+      - service: notify.alexa_media_comedor
+        data_template:
+          data:
+            type: announce
+            method: speak
+          message: >
+            {% if trigger.entity_id == 'binary_sensor.llavero_jcc' %}
+              {{ [
+              "Bienvenido a casa rey de la jungla.",
+              "Bienvenido a casa, espero que no estés muy cansado.",
+              "Por fin te veo por aquí, pensaba que no llegarías nunca.",
+              "Venga, ponte cómodo y descansa un poco."
+              ] |random }}
+            {% elif trigger.entity_id == 'binary_sensor.llavero_isset' %}
+              {{ [
+              "Bienvenida a casa mi reina.",
+              "Bienvenida a casa, espero que no estés muy cansada.",
+              "Hola encanto. Por fin te veo por aquí, pensaba que no llegarías nunca.",
+              "Hola amor, pareces cansada. Pasa y ponte cómoda.",
+              "¿Finalmente de vuelta? Venga, ponte cómoda y descansa un poco.",
+              "Hola guapa. Ponte cómoda, siéntate en el sofá y disfruta de alguna de tus series."
+              ] |random }}
+            {% elif trigger.entity_id == 'binary_sensor.llavero_ania' %}
+              Bienvenidos a casa familia, encantada de poder ayudaros en lo que pueda.
+            {% else %}
+              Detectado acceso no autorizado. Se ha avisado a la policia.
+            {% endif %}
+
+  - alias: Movimiento Video
+    initial_state: false
+    trigger:
+      - entity_id: binary_sensor.entrada_puerta
+        platform: state
+        from: 'off'
+        to: 'on'
+      - entity_id: binary_sensor.comedor_movimiento
+        platform: state
+        from: 'off'
+        to: 'on'
+      - entity_id: binary_sensor.cocina_movimiento
+        platform: state
+        from: 'off'
+        to: 'on'
+    condition:
+      - condition: state
+        entity_id: alarm_control_panel.house
+        state: armed_away
+    action:
+      - service: camera.record
+        data_template:
+          entity_id: camera.comedor
+          duration: 30
+          filename: '/mnt/Mis Documentos/Camara_Seguridad/Auto/comedor_{{ now().strftime("%Y-%m-%d %H.%M.%S") }}.mp4'
+#      - delay: 00:01:00
+#      - service: telegram_bot.send_video
+#        data:
+#          file: '/mnt/Mis Documentos/Camara_Seguridad/comedor_{{ now().strftime("%Y-%m-%d %H.%M.%S") }}.mp4'
+#          caption: '[ALARMA] Movimiento detectado'
+
+  - alias: Movimiento notificacion
+#    initial_state: false
+    trigger:
+      - platform: event
+        event_type: folder_watcher
+        event_data:
+          event_type: created
+#    condition:
+#      - condition: state
+#        entity_id: alarm_control_panel.house
+#        state: armed_away
+    action:
+#      - delay: '00:01:00'
+      - service_template: >
+          {% if states('input_select.alarm_msg_destination') == 'JCC' %}
+            notify.telegram_jcc
+          {% elif states('input_select.alarm_msg_destination') == 'Isset' %}
+            notify.telegram_isset
+          {% else %}
+            notify.telegram_familia
+          {% endif %}
+        data_template:
+          title: Send a Video
+          message: "*Detectado Movimiento en comedor*"
+          data:
+            video:
+              - file: "{{ trigger.event.data.path }}"
+                caption: "*Detectado Movimiento en el comedor*"
+
+
+##############################################################################
+########     Cuando modo VACACIONES ON apagar y encender luz salón     #######
+##############################################################################
+#  - id: lucesrandom_on
+#    alias: 'Luces Random ON'
+#    condition:
+#      - condition: state
+#        entity_id: input_boolean.en_vacaciones
+#        state: 'on'
+#    trigger:
+#       - platform: time
+#         at: '21:15:00'
+#    action:
+#      - delay: "00:{{ '{:02}'.format(range(1, 30) | random | int) }}:00"
+#      - service: light.turn_on
+#        entity_id: light.bombilla2
+#  
+#  - id: lucesrandom_off
+#    alias: 'Luces Random OFF'
+#    condition:
+#      - condition: state
+#        entity_id: input_boolean.en_vacaciones
+#        state: 'on'
+#    trigger:
+#       - platform: time
+#         at: '23:30:00'
+#    action:
+#      - delay: "00:{{ '{:02}'.format(range(1, 30) | random | int) }}:00"
+#      - service: light.turn_off
+#        entity_id: light.bombilla2
+
+
+#######################
+##  Personalizacion  ##
+#######################
+homeassistant:
+  customize:
+    binary_sensor.entrada_puerta:
+      device_class: door
+    binary_sensor.llavero_jcc:
+      device_class: door
+      icon: mdi:account-key 
+    binary_sensor.llavero_isset:
+      device_class: door
+      icon: mdi:account-key 
+    binary_sensor.llavero_ania:
+      device_class: door
+      icon: mdi:account-key 
+    script.camera_snapshot:
+      icon: mdi:camera
+    script.camera_record:
+      icon: mdi:record
+    automation.movimiento_video:
+      icon: mdi:alarm-light-outline
+    automation.movimiento_notificacion:
+      icon: mdi:alarm-light-outline

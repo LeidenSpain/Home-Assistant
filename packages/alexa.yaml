@@ -1,0 +1,119 @@
+###################
+##  Dispositivos ##
+###################
+
+
+#####################
+##  Informaciones  ##
+#####################
+sensor:
+  - platform: template
+    sensors:
+      last_alexa:
+        friendly_name: 'Ultimo Alexa'
+        value_template: >-
+          {% if is_state_attr('media_player.alexa_comedor','last_called', true) %}
+            comedor
+          {% elif is_state_attr('media_player.alexa_dormitorio','last_called', true) %}
+            dormitorio
+          {% elif is_state_attr('media_player.alexa_banyo','last_called', true) %}
+            banyo
+          {% else %}
+            none
+          {% endif %}
+
+input_select:
+  alexa_msg_destination:
+    icon: mdi:amazon-alexa
+    name: Dispositivo Alexa
+    options:
+      - Comedor
+      - Dormitorio
+      - Baño
+      - Todos
+
+input_text:
+  alexa_msg_text:
+    name: Mensaje a Alexa
+    initial: ""
+
+input_boolean:
+  alexa_whispered:
+    name: Alexa susurro
+
+
+###############
+##  Scripts  ##
+###############
+script:
+  tv_10min_off:
+    sequence:
+      - service_template: >
+          {% if is_state('sensor.last_alexa','comedor') %}
+            script.tv_comedor_10min_off
+          {% elif is_state('sensor.last_alexa','dormitorio') %}
+            script.tv_dormitorio_10min_off
+          {% endif %}
+
+  tv_20min_off:
+    sequence:
+      - service_template: >
+          {% if is_state('sensor.last_alexa','comedor') %}
+            script.tv_comedor_20min_off
+          {% elif is_state('sensor.last_alexa','dormitorio') %}
+            script.tv_dormitorio_20min_off
+          {% endif %}
+
+  tv_30min_off:
+    sequence:
+      - service_template: >
+          {% if is_state('sensor.last_alexa','comedor') %}
+            script.tv_comedor_30min_off
+          {% elif is_state('sensor.last_alexa','dormitorio') %}
+            script.tv_dormitorio_30min_off
+          {% endif %}
+
+  alexa_msg_send:
+    alias: Mensaje a enviar
+    sequence:
+      - service_template: >
+          {% if states('input_select.alexa_msg_destination') == 'Comedor' %}
+            notify.alexa_media_comedor
+          {% elif states('input_select.alexa_msg_destination') == 'Dormitorio' %}
+            notify.alexa_media_dormitorio
+          {% elif states('input_select.alexa_msg_destination') == 'Baño' %}
+            notify.alexa_media_banyo
+          {% else %}
+            notify.alexa_media_en_toda_la_casa
+          {% endif %}
+        data_template:
+          data:
+            type: announce
+            method: speak
+          message: >
+            {% if states('input_boolean.alexa_whispered') == 'off' %}
+              "{{ states('input_text.alexa_msg_text') }}"
+            {% else %}
+              "<amazon:effect name='whispered'> {{ states('input_text.alexa_msg_text') }} </amazon:effect>"
+            {% endif %}
+      - delay: '00:00:01'
+      - service: input_text.set_value
+        data:
+          entity_id: input_text.alexa_msg_text
+          value: ""
+#https://developer.amazon.com/es/docs/custom-skills/speech-synthesis-markup-language-ssml-reference.html#amazon-effect
+
+
+########################
+##  Automatizaciones  ##
+########################
+automation:
+
+
+#######################
+##  Personalizacion  ##
+#######################
+homeassistant:
+  customize:
+    script.alexa_msg_send:
+      can_cancel: false
