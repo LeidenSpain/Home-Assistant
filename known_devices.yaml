@@ -1,0 +1,82 @@
+
+amazfit_bip_jcc:
+  hide_if_away: false
+  mac: BLE_D8:
+  name: JCC
+  picture: /local/images/icon_jcc.jpg
+  track: true
+
+mi_band_4_isset:
+  hide_if_away: false
+  mac: BLE_F1:
+  name: Isset
+  picture: /local/images/icon_isset.jpg
+  track: true
+
+mi_band_2_ania:
+  hide_if_away: false
+  mac: BLE_D0:
+  name: Ania
+  picture: /local/images/icon_ania.jpg
+  track: true
+
+amazfit_cor:
+  hide_if_away: true
+  mac: BLE_F5:
+  name: Alejandra
+  track: true
+
+mi_band_2_juan:
+  hide_if_away: false
+  mac: BLE_F9:
+  name: Juan 
+  track: true
+
+dtvbluetooth:
+  hide_if_away: false
+  mac: BT_D0:
+  name: DTVBluetooth
+  track: false
+
+tv_samsung_led46:
+  hide_if_away: false
+  mac: BT_0C:
+  name: '[TV]Samsung LED46'
+  track: false
+
+ulefone_s7:
+  hide_if_away: false
+  mac: BT_CC:
+  name: Ulefone S7
+  track: false
+
+mibox_ania:
+  hide_if_away: false
+  mac: BT_E4:
+  name: MiBox Ania
+  track: false
+
+
+ble_3c_:
+  hide_if_away: false
+  mac: BLE_3C:
+  name: ble 3c 
+  track: false
+
+ble_68_:
+  hide_if_away: false
+  mac: BLE_68:
+  name: ble 68 
+  track: false
+
+ble_58_:
+  hide_if_away: false
+  mac: BLE_58:
+  name: ble 58 
+  track: false
+
+mibcs:
+  hide_if_away: false
+  mac: BLE_C1:
+  name: MIBCS
+  track: false

@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<UserConfiguration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <AudioLanguagePreference />
+  <PlayDefaultAudioTrack>true</PlayDefaultAudioTrack>
+  <SubtitleLanguagePreference />
+  <DisplayMissingEpisodes>false</DisplayMissingEpisodes>
+  <GroupedFolders />
+  <SubtitleMode>Default</SubtitleMode>
+  <DisplayCollectionsView>false</DisplayCollectionsView>
+  <EnableLocalPassword>false</EnableLocalPassword>
+  <OrderedViews>
+    <string></string>
+    <string></string>
+    <string></string>
+    <string></string>
+    <string></string>
+  </OrderedViews>
+  <LatestItemsExcludes />
+  <MyMediaExcludes />
+  <HidePlayedInLatest>true</HidePlayedInLatest>
+  <RememberAudioSelections>true</RememberAudioSelections>
+  <RememberSubtitleSelections>true</RememberSubtitleSelections>
+  <EnableNextEpisodeAutoPlay>true</EnableNextEpisodeAutoPlay>
+</UserConfiguration>

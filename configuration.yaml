@@ -1,0 +1,357 @@
+#logger:
+#   default: debug
+
+homeassistant:
+  # Name of the location where Home Assistant is running
+  name: Casa
+  # Location required to calculate the time the sun rises and sets
+  latitude: !secret latitude
+  longitude: !secret longitude
+  # Impacts weather/sunrise data (altitude above sea level in meters)
+  elevation: !secret elevation
+  # metric for Metric, imperial for Imperial
+  unit_system: metric
+  # Pick yours from here: http://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+  time_zone: Europe/Madrid
+  # Customization file
+  #customize: !include config/customize.yaml
+  packages: !include_dir_named packages
+
+  auth_providers:
+   - type: legacy_api_password
+     api_password: !secret ha_password
+
+  whitelist_external_dirs:
+    - /home/homeassistant/.homeassistant/
+    - '/mnt/Mis Documentos/Camara_Seguridad'
+
+ffmpeg:
+  ffmpeg_bin: /usr/bin/ffmpeg
+
+
+### Listado dispositivos ###
+xiaomi_aqara:
+  gateways:
+    - mac: !secret xiaomi_aqara_mac
+      key: !secret xiaomi_aqara_key
+
+tuya:
+  username: !secret smartlife_user
+  password: !secret smartlife_psw
+  country_code: 34
+  platform: smart_life
+
+smartir:
+  update_branch: rc
+
+mqtt:
+  broker: 192.168.3.10
+  port: 1883
+  client_id: tasmotaHA
+  username: !secret tasmota_user
+  password: !secret tasmota_psw
+  discovery: false
+  discovery_prefix: homeassistant            
+
+hacs:
+  token: !secret hacs_token
+
+system_health:
+
+
+# Enables the frontend
+frontend:
+  javascript_version: latest
+  themes: !include_dir_merge_named themes/
+
+
+# Enables configuration UI
+config:
+
+
+# Uncomment this if you are using SSL/TLS, running in Docker container, etc.
+http:
+#  api_password: !secret ha_password
+  base_url: https://!secret url_ddns:8123
+  ssl_certificate: /home/homeassistant/.homeassistant/www/fullchain.pem
+  ssl_key: /home/homeassistant/.homeassistant/www/privkey.pem
+
+
+# Checks for available updates
+# Note: This component will send some information about your system to
+# the developers to assist with development of Home Assistant.
+# For more information, please see:
+# https://home-assistant.io/blog/2016/10/25/explaining-the-updater/
+updater:
+  # Optional, allows Home Assistant developers to focus on popular components.
+  # include_used_components: true
+
+
+# Discover some devices automatically
+discovery:
+  ignore:
+#    - igd
+
+# Enables support for tracking state changes over time
+history:
+
+
+# View all events in a logbook
+logbook:
+  exclude:
+    entities: 
+      - media_player.emby_dell_chrome_jcc
+
+
+# Enables a map showing the location of tracked devices
+map:
+
+
+# Track the sun
+sun:
+
+
+# Text to speech
+tts:
+  - platform: google_translate
+    service_name: google_say
+    language: 'es'
+    cache: false
+    
+
+# Recorder
+recorder:
+  purge_keep_days: 15
+  exclude:
+    domains:
+      - automation
+      - script
+      - group
+    entities:
+# sistema #
+      - sun.sun
+      - sensor.time
+      - sensor.date
+      - sensor.date_template
+#      - sensor.day_night
+      - sensor.workday_template
+      - sensor.custom_card_tracker
+      - sensor.custom_component_tracker
+      - sensor.custom_python_script_tracker
+      - sensor.potential_breaking_changes
+      - sensor.hacs
+# servidor #
+      - sensor.current_version
+      - updater.updater
+      - sensor.last_ha_version
+      - sensor.last_boot
+      - sensor.last_boot_templated
+      - sensor.server_uptime
+      - sensor.uptime_templated
+      - input_number.days_cleanbackup_emby
+      - input_number.days_cleanbackup_ha
+      - script.backup_clean_emby
+      - script.backup_clean_ha
+      - script.backup_emby
+      - script.backup_emby_update_sensors
+      - script.backup_ha
+      - script.backup_ha_update_sensors
+      - script.update_home_assistant
+      - sensor.last_backup_emby
+      - sensor.last_backup_ha
+      - sensor.backup_count_emby
+      - sensor.backup_count_ha
+      - sensor.backup_size_total_emby
+      - sensor.backup_size_total_ha
+      - sensor.ssl_certificate_expiry
+      - sensor.cpu_speed
+      - sensor.hacs
+      - sensor.potential_breaking_changes
+      - switch.service_amazondash
+      - switch.service_bluetooth
+      - sensor.amule_cpu
+      - sensor.count_sensor
+      - sensor.count_switch
+      - sensor.count_binarysensor
+      - sensor.count_automation
+      - sensor.count_inputboolean
+      - sensor.count_inputnumber
+      - sensor.count_inputselect
+      - sensor.count_inputtext
+      - sensor.count_inputdatetime
+      - sensor.count_group
+      - sensor.count_script
+      - sensor.count_camera
+
+# comedor #
+      - input_datetime.aa_comedor_off_festivo
+      - input_datetime.aa_comedor_off_laborable
+      - input_datetime.aa_comedor_on_festivo
+      - input_datetime.aa_comedor_on_laborable
+      - input_number.aa_comedor_temp_cool_auto
+      - input_number.aa_comedor_temp_cool_on
+      - input_number.aa_comedor_temp_heat_auto
+      - input_number.aa_comedor_temp_heat_on
+      - automation.aa_agua_msg
+# cocina #
+      - input_datetime.dishwasher_on
+# despacho #
+      - automation.miboxania_off
+      - automation.miboxania_on
+      - input_datetime.miboxania_off
+      - input_datetime.miboxania_on
+# precio luz #
+      - sensor.fecha
+      - sensor.hora_recogida_de_datos
+      - sensor.maximo_diario_eur_kwh
+      - sensor.maximo_diario_hora
+      - sensor.minimo_diario_eur_kwh
+      - sensor.minimo_diario_hora
+      - sensor.luz_scrape_fecha
+      - sensor.luz_scrape_hora
+# trayecto #
+      - input_select.origin
+      - input_select.destination
+      - sensor.orig_address
+      - sensor.dest_address
+# vacuum #
+      - sensor.vacuum_battery_level
+      - sensor.vacuum_clean_stop
+      - sensor.vacuum_cleaned_area
+      - sensor.vacuum_cleaning_count
+      - sensor.vacuum_cleaning_time
+      - sensor.vacuum_do_not_disturb
+      - sensor.vacuum_fan_speed
+      - sensor.vacuum_total_cleaned_area
+      - sensor.vacuum_total_cleaning_time
+      - input_boolean.vacuum_auto_day0
+      - input_boolean.vacuum_auto_day1
+      - input_boolean.vacuum_auto_day2
+      - input_boolean.vacuum_auto_day3
+      - input_boolean.vacuum_auto_day4
+      - input_boolean.vacuum_auto_day5
+      - input_boolean.vacuum_auto_day6
+      - input_datetime.vacuum_auto_hour
+      - group.vacuum_auto_on
+# meteo #
+      - sensor.wind_dir
+      - camera.meteo_fijo
+      - camera.meteo_movil
+#      - sensor.u_s_air_pollution_level
+#      - sensor.u_s_air_quality_index
+#      - sensor.u_s_main_pollutant
+# bateria sensores #
+      - sensor.battery_aa_agua
+      - sensor.battery_ania_temperatura
+      - sensor.battery_balcon_temperatura
+      - sensor.battery_bano_temperatura
+      - sensor.battery_cocina_movimiento
+      - sensor.battery_cocina_temperatura
+      - sensor.battery_comedor_aa
+      - sensor.battery_comedor_movimiento
+      - sensor.battery_comedor_temperatura
+      - sensor.battery_comedor_ventana_der
+      - sensor.battery_comedor_ventana_izq
+      - sensor.battery_despacho_temperatura
+      - sensor.battery_dormitorio_aa
+      - sensor.battery_dormitorio_temperatura
+      - sensor.battery_entrada_puerta
+      - sensor.battery_entrada_pulsador
+      - sensor.battery_invitados_temperatura
+      - sensor.battery_llavero_ania
+      - sensor.battery_llavero_isset
+      - sensor.battery_llavero_jcc
+# aires acondicionados #
+      - input_datetime.aa_comedor_on_festivo
+      - input_datetime.aa_comedor_off_festivo
+      - input_datetime.aa_comedor_on_laborable
+      - input_datetime.aa_comedor_off_laborable
+      - input_datetime.aa_dormitorio_on_festivo
+      - input_datetime.aa_dormitorio_off_festivo
+      - input_datetime.aa_dormitorio_on_laborable
+      - input_datetime.aa_dormitorio_off_laborable
+# lavavajillas #
+      - input_datetime.lavavajillas_on
+# lavadora #
+
+### Aspecto ###
+#panel_custom: !include config/panel_custom.yaml
+panel_iframe: !include config/panel_iframe.yaml
+alarm_control_panel: !include resources/bwalarm/bwalarm.yaml
+
+lovelace :
+   mode: yaml
+   
+browser_mod:
+
+
+### Subrutinas ###
+#shell_command: !include config/shell_command.yaml
+
+
+### API ###
+api:
+
+alexa:
+ smart_home:
+   filter:
+     exclude_domains:
+       - automation
+       - binary_sensor
+       - camera
+       - climate
+       - cover
+       - device_tracker
+       - group
+       - input_boolean
+       - input_datetime
+       - input_number
+       - input_select
+       - light
+       - media_player
+       - script
+       - sensor
+       - sun
+       - switch
+       - vacuum
+       - weather
+       - zone
+     include_entities:
+      # comedor #
+       - cover.persianas
+       - cover.puerta
+       - cover.ventana
+      # aire acondicionado #
+       - script.aa_auto
+       - script.aa_fan
+      # roborock Clin #
+       - script.vacuum_home
+       - script.vacuum_on
+       - script.vacuum_zone_kitchen
+       - script.vacuum_zone_office
+       - script.vacuum_zone_diningroom
+       - script.vacuum_zone_bedrooms
+       - script.vacuum_on_mop
+       - script.vacuum_zone_kitchen_mop
+       - script.vacuum_zone_office_mop
+       - script.vacuum_zone_diningroom_mop
+       - script.vacuum_zone_bedrooms_mop
+      # sensores temperatura de la casa #
+       - sensor.ania_temperatura
+       - sensor.balcon_temperatura
+       - sensor.bano_temperatura
+       - sensor.cocina_temperatura
+       - sensor.comedor_temperatura
+       - sensor.despacho_temperatura
+       - sensor.dormitorio_temperatura
+       - sensor.invitados_temperatura
+      # televisor #
+       - script.tv_10min_off
+       - script.tv_20min_off
+       - script.tv_30min_off
+      # baño #
+       - switch.estufa
+
+
+### CUSTOM COMPONENTS ###
+breaking_changes:

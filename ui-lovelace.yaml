@@ -1,0 +1,195 @@
+title: Home-Server
+
+# https://community.home-assistant.io/t/my-lovelace-plugins/70726
+resources:
+  - url: /hacsfiles/air-visual-card/air-visual-card.js
+    type: js
+  - url: /hacsfiles/bar-card/bar-card.js
+    type: js
+  - url: /hacsfiles/bignumber-card/bignumber-card.js
+    type: js
+  - url: /hacsfiles/button-card/button-card.js
+    type: module  
+  - url: /hacsfiles/canvas-gauge-card/canvas-gauge-card.js
+    type: module
+  - url: /hacsfiles/circle-sensor-card/circle-sensor-card.js
+    type: module
+  - url: /hacsfiles/custom-header/custom-header.js
+    type: module
+  - url: /hacsfiles/dual-gauge-card/dual-gauge-card.js
+    type: js
+  - url: /hacsfiles/flex-horseshoe-card/flex-horseshoe-card.js
+    type: module    
+  - url: /hacsfiles/flex-table-card/flex-table-card.js
+    type: js
+  - url: /hacsfiles/forked-daapd-card/forked-daapd-card.js
+    type: module
+  - url: /hacsfiles/gauge-card/gauge-card.js
+    type: module
+  - url: /hacsfiles/group-card/group-card.js
+    type: js
+  - url: /hacsfiles/ha-card-waze-travel-time/ha-card-waze-travel-time.js
+    type: module
+  - url: /hacsfiles/home-setter/home-setter.js
+    type: js
+  - url: /hacsfiles/light-brightness-preset-row/light-brightness-preset-row.js
+    type: js
+  - url: /hacsfiles/lovelace-auto-entities/auto-entities.js
+    type: js
+  - url: /hacsfiles/lovelace-battery-entity/battery-entity.js
+    type: module
+  - url: /hacsfiles/lovelace-card-mod/card-mod.js
+    type: module
+  - url: /hacsfiles/lovelace-card-tools/card-tools.js
+    type: js
+  - url: /hacsfiles/lovelace-dummy-entity-row/dummy-entity-row.js
+    type: js
+  - url: /hacsfiles/lovelace-fold-entity-row/fold-entity-row.js
+    type: js
+  - url: /hacsfiles/lovelace-layout-card/layout-card.js
+    type: js
+  - url: /hacsfiles/lovelace-more-info-card/more-info-card.js
+    type: js
+  - url: /hacsfiles/lovelace-multiple-entity-row/multiple-entity-row.js
+    type: js
+  - url: /hacsfiles/lovelace-slider-entity-row/slider-entity-row.js
+    type: js
+  - url: /hacsfiles/lovelace-state-switch/state-switch.js
+    type: js
+  - url: /hacsfiles/lovelace-swipe-navigation/swipe-navigation.js
+    type: js    
+  - url: /hacsfiles/lovelace-text-input-row/lovelace-text-input-row.js
+    type: js
+  - url: /hacsfiles/lovelace-toggle-lock-entity-row/toggle-lock-entity-row.js
+    type: js
+  - url: /hacsfiles/mini-graph-card/mini-graph-card-bundle.js
+    type: module
+  - url: /hacsfiles/mini-media-player/mini-media-player.js
+    type: module
+  - url: /hacsfiles/radial-menu/radial-menu.js
+    type: module
+  - url: /hacsfiles/secondaryinfo-entity-row/secondaryinfo-entity-row.js
+    type: js
+  - url: /hacsfiles/simple-thermostat/simple-thermostat.js
+    type: module
+  - url: /hacsfiles/swipe-card/swipe-card.js
+    type: module
+  - url: /hacsfiles/text-divider-row/text-divider-row.js
+    type: module
+  - url: /hacsfiles/travel-time-card/travel-time-card.js
+    type: js
+  - url: /hacsfiles/vertical-stack-in-card/vertical-stack-in-card.js
+    type: js
+  - url: /hacsfiles/weather-card/weather-card.js
+    type: module
+
+
+views:
+  - !include lovelace/00_main.yaml
+  - !include lovelace/01_vacuum.yaml
+  - !include lovelace/10_temperaturas.yaml
+  - !include lovelace/20_casa.yaml
+  - !include lovelace/30_servidor.yaml
+  - !include lovelace/40_media.yaml
+  - !include lovelace/50_meteo.yaml
+  - !include lovelace/60_informacion.yaml
+  - !include lovelace/99_hidden.yaml
+
+
+custom_header:
+  compact_mode: true
+
+
+excluded_entities:
+# grupos
+  - group.all_automations
+  - group.all_devices
+  - group.all_lights
+  - group.all_scripts
+  - group.all_switches
+  - group.all_vacuum_cleaners
+  - group.backup_emby
+  - group.backup_ha
+  - group.balcon
+  - group.batteries
+  - group.cocina
+  - group.comedor
+  - group.despacho
+  - group.dormitorio
+  - group.entrada
+  - group.habitacion_ania
+  - group.info
+  - group.info_amule
+  - group.info_ha
+  - group.info_server
+  - group.network
+  - group.precioluz
+  - group.rooms
+  - group.router
+  - group.system
+  - group.device_tracker
+  - automation.a_adb_start
+  - sensor.date
+  - sensor.last_boot
+  - sensor.uptime
+  - sensor.custom_card_tracker
+  - sensor.custom_component_tracker
+  - sensor.custom_python_script_tracker
+# AA comedor #
+  - automation.dash1
+  - script.aa_comedor_auto
+  - script.aa_comedor_cool
+  - script.aa_comedor_heat
+  - script.aa_comedor_off
+  - automation.aa_agua_msg
+# llaveros #
+  - automation.alarma_apagada_jcc
+  - automation.alarma_apagada_isset
+  - automation.alarma_apagada_ania
+  - device_tracker.amazfit_cor
+  - device_tracker.mi_band_2_juanrubio
+# media player
+  - group.info_ffmpeg
+  - group.media
+  - group.media_player
+  - media_player.this_device
+# meteo
+  - automation.weather_msg_storm
+  - group.meteo
+  - group.meteo_0
+  - group.meteo_1
+  - group.weather
+  - sensor.dark_sky_icon
+  - sensor.dark_sky_wind_bearing
+  - sensor.tormenta
+  - sun.sun
+# robot aspirador #
+  - automation.vacuum_msg_charging
+  - automation.vacuum_msg_error
+  - automation.vacuum_msg_finish
+  - automation.vacuum_msg_pause
+  - automation.vacuum_msg_return
+  - automation.vacuum_msg_start
+  - group.vacuum_auto_on
+  - sensor.vacuum_battery_level
+  - sensor.vacuum_fan_speed 
+  - sensor.vacuum_clean_stop
+  - sensor.vacuum_cleaned_area
+  - sensor.vacuum_cleaning_count
+  - sensor.vacuum_cleaning_time
+  - sensor.vacuum_do_not_disturb
+  - sensor.vacuum_fan_speed
+  - sensor.vacuum_filter_left
+  - sensor.vacuum_main_brush_left
+  - sensor.vacuum_sensors_clean_left
+  - sensor.vacuum_side_brush_left
+  - sensor.vacuum_status
+  - sensor.vacuum_total_cleaned_area
+  - sensor.vacuum_total_cleaning_time
+  - vacuum.clin
+# server
+  - script.backup_ha_update_sensors
+  - script.backup_emby_update_sensors
+  - script.update_home_assistant
+  - switch.servidor_medidor
+  - switch.plug_158d000245d060
